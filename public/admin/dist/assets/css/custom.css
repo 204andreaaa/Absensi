@@ -1,0 +1,13 @@
+/* Biar modal-nya selalu di atas backdrop & header Stisla */
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+.modal {
+    z-index: 1055 !important;
+}
+
+/* Kalau masih kerasa "ketutup", boleh lebih tinggi lagi */
+.modal.show {
+    z-index: 2000 !important;
+}
