@@ -73,7 +73,7 @@
                     <div class="card-header">
                         <h4>Dataset Wajah</h4>
                     </div>
-                    <div class="card-body">{{ $stats['dataset_count'] }}/30</div>
+                    <div class="card-body">{{ $stats['dataset_count'] }}/15</div>
                 </div>
             </div>
         </div>
@@ -143,9 +143,11 @@
                                         <td>{{ $item->jam_masuk ?? '-' }}</td>
                                         <td>{{ $item->jam_pulang ?? '-' }}</td>
                                         <td>
-                                            <span class="badge badge-info">
-                                                {{ ucfirst($item->status ?? 'hadir') }}
-                                            </span>
+                                            @if($item->status === 'terlambat')
+                                                <span class="badge badge-warning">Terlambat</span>
+                                            @else
+                                                <span class="badge badge-success">Tepat Waktu</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

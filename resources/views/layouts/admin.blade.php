@@ -149,8 +149,8 @@ class="rounded-circle mr-1">
 
 <li class="menu-header">LAPORAN</li>
 
-<li>
-<a class="nav-link" href="#">
+<li class="{{ request()->is('admin/laporan*') ? 'active' : '' }}">
+<a class="nav-link" href="{{ route('admin.laporan.index') }}">
 <i class="fas fa-file"></i>
 <span>Laporan Kehadiran</span>
 </a>

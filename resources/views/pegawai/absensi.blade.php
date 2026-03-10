@@ -5,6 +5,12 @@
         <h1>Absensi Wajah</h1>
     </div>
 
+    @if($datasetCount < $minDataset)
+        <div class="alert alert-warning">
+            Dataset wajah Anda belum lengkap. Silakan daftar dan lengkapi dataset terlebih dahulu sebelum melakukan absensi.
+        </div>
+    @endif
+
     <div class="card shadow-sm">
         <div class="card-header">
             <h4 class="mb-0">Kamera Absensi</h4>
@@ -91,6 +97,7 @@
         let gestureStep = 0;
         let absensiMode = null;
         let isStarting = false;
+        const minimumConfidence = 60;
 
         const gestures = [
             'Hadap Kiri',
@@ -100,6 +107,13 @@
 
         function pilihMode(mode) {
             if (isStarting) {
+                return;
+            }
+
+            if ({{ $datasetCount }} < {{ $minDataset }}) {
+                resultText.innerText = 'Dataset wajah belum lengkap';
+                gestureText.innerText = 'Silakan lengkapi dataset terlebih dahulu di menu Dataset Wajah';
+                showErrorAlert('Dataset wajah belum lengkap. Silakan daftar dataset terlebih dahulu.');
                 return;
             }
 
@@ -207,15 +221,27 @@
             return bottom - top > 15;
         }
 
+        function getMatchConfidence(match) {
+            return Math.max(
+                0,
+                Math.min(100, Math.round((1 - match.distance) * 100))
+            );
+        }
+
+        function isMatchValid(match) {
+            if (match.label === 'unknown') {
+                return false;
+            }
+
+            return getMatchConfidence(match) >= minimumConfidence;
+        }
+
         function formatMatchLabel(match) {
             if (match.label === 'unknown') {
                 return 'Unknown';
             }
 
-            const confidence = Math.max(
-                0,
-                Math.min(100, Math.round((1 - match.distance) * 100))
-            );
+            const confidence = getMatchConfidence(match);
 
             return `${match.label} (${confidence}%)`;
         }
@@ -256,7 +282,10 @@
 
                 resizedDetections.forEach((detection) => {
                     const match = faceMatcher.findBestMatch(detection.descriptor);
-                    const label = formatMatchLabel(match);
+                    const matchIsValid = isMatchValid(match);
+                    const label = matchIsValid
+                        ? formatMatchLabel(match)
+                        : `Unknown (${getMatchConfidence(match)}%)`;
                     const drawBox = new faceapi.draw.DrawBox(detection.detection.box, {
                         label
                     });
@@ -265,6 +294,12 @@
                     resultText.innerText = `Terdeteksi: ${label}`;
 
                     const landmarks = detection.landmarks;
+
+                    if (!matchIsValid) {
+                        gestureStep = 0;
+                        gestureText.innerText = `Wajah tidak dikenali atau confidence di bawah ${minimumConfidence}%`;
+                        return;
+                    }
 
                     if (gestureStep === 0) {
                         if (detectHeadDirection(landmarks) === 'kiri') {

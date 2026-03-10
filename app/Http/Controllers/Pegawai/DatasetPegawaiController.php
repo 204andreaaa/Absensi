@@ -9,17 +9,20 @@ use Illuminate\Support\Facades\Auth;
 
 class DatasetPegawaiController extends Controller
 {
+    private const MIN_DATASET = 15;
 
-public function index()
-{
-    $pegawaiId = Auth::id();
+    public function index()
+    {
+        $pegawaiId = Auth::id();
 
-    $datasetCount = DatasetWajah::where('pegawai_id',$pegawaiId)->count();
+        $datasetCount = DatasetWajah::where('pegawai_id',$pegawaiId)->count();
 
-    return view('pegawai.dataset',[
-        'datasetCount' => $datasetCount
-    ]);
-}
+        return view('pegawai.dataset',[
+            'datasetCount' => $datasetCount,
+            'minDataset' => self::MIN_DATASET,
+            'forceDatasetRegistration' => session('force_dataset_registration', false)
+        ]);
+    }
 
 public function store(Request $request)
 {

@@ -44,7 +44,9 @@
                                 <td>{{ $item->jam_masuk ?? '-' }}</td>
                                 <td>{{ $item->jam_pulang ?? '-' }}</td>
                                 <td>
-                                    @if($item->jam_pulang)
+                                    @if($item->status === 'terlambat')
+                                        <span class="badge badge-warning">Terlambat</span>
+                                    @elseif($item->jam_pulang)
                                         <span class="badge badge-success">Lengkap</span>
                                     @elseif($item->jam_masuk)
                                         <span class="badge badge-warning">Belum Pulang</span>

@@ -5,13 +5,24 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DatasetWajah;
+use App\Models\Pegawai;
 
 class DatasetController extends Controller
 {
+    private const MIN_DATASET = 15;
 
     public function index()
     {
-        return view('admin.dataset.index');
+        $datasetPegawai = Pegawai::withCount('dataset_wajahs')
+            ->having('dataset_wajahs_count', '>', 0)
+            ->orderByDesc('dataset_wajahs_count')
+            ->orderBy('nama')
+            ->get();
+
+        return view('admin.dataset.index', [
+            'datasetPegawai' => $datasetPegawai,
+            'minDataset' => self::MIN_DATASET
+        ]);
     }
 
 
@@ -64,6 +75,15 @@ class DatasetController extends Controller
 
         return response()->json($result);
 
+    }
+
+    public function destroy($pegawaiId)
+    {
+        DatasetWajah::where('pegawai_id', $pegawaiId)->delete();
+
+        return redirect()
+            ->route('admin.dataset.index')
+            ->with('success', 'Dataset pegawai berhasil dihapus.');
     }
 
 }

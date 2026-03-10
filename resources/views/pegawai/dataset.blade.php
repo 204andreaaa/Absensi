@@ -11,27 +11,44 @@
         </div>
 
         <div class="card-body text-center">
-            @if($datasetCount >= 30)
+            @if($datasetCount >= $minDataset)
                 <div class="alert alert-success mb-0">
                     Dataset wajah sudah lengkap.<br>
                     Anda sudah dapat melakukan absensi.
                 </div>
             @else
+                <div class="alert alert-warning text-left">
+                    Dataset wajah Anda belum lengkap atau telah dihapus admin.
+                    Silakan lengkapi minimal {{ $minDataset }} data wajah terlebih dahulu agar bisa mengakses semua fitur.
+                </div>
+
                 <div class="row justify-content-center">
                     <div class="col-lg-8">
+                        <div class="mb-4 p-3 rounded text-left" style="background: #eef6ff; border: 1px solid #d6e7ff;">
+                            <div class="text-muted small text-uppercase font-weight-bold mb-2">
+                                Arahan Pengambilan
+                            </div>
+                            <h5 id="instructionTitle" class="font-weight-bold mb-2">
+                                Dekatkan wajah ke kamera
+                            </h5>
+                            <p id="instructionText" class="mb-0 text-muted">
+                                Pastikan hanya satu wajah terlihat dan pencahayaan cukup terang.
+                            </p>
+                        </div>
+
                         <div class="mb-4 p-3 rounded" style="background: #f6f9fc;">
                             <div class="text-muted small text-uppercase font-weight-bold mb-2">
                                 Progress Dataset
                             </div>
                             <h4 id="datasetCounter" class="font-weight-bold mb-3">
-                                Dataset: {{ $datasetCount }} / 30
+                                Dataset: {{ $datasetCount }} / {{ $minDataset }}
                             </h4>
                             <div class="progress" style="height: 10px; border-radius: 999px;">
                                 <div
                                     id="datasetProgress"
                                     class="progress-bar bg-success"
                                     role="progressbar"
-                                    style="width: {{ ($datasetCount / 30) * 100 }}%;"
+                                    style="width: {{ ($datasetCount / $minDataset) * 100 }}%;"
                                 ></div>
                             </div>
                         </div>
@@ -66,7 +83,7 @@
 @endsection
 
 @push('scripts')
-    @if($datasetCount < 30)
+    @if($datasetCount < $minDataset)
         <script src="{{ asset('js/face-api.min.js') }}"></script>
 
         <script>
@@ -74,11 +91,69 @@
             const canvas = document.getElementById('overlay');
             const datasetCounter = document.getElementById('datasetCounter');
             const datasetProgress = document.getElementById('datasetProgress');
+            const instructionTitle = document.getElementById('instructionTitle');
+            const instructionText = document.getElementById('instructionText');
 
             let datasetCount = {{ $datasetCount }};
-            const maxDataset = 30;
+            const maxDataset = {{ $minDataset }};
             let captureInterval = null;
             let isSaving = false;
+            const captureSteps = [
+                { pose: 'depan', title: 'Dekatkan wajah ke kamera', text: 'Posisikan wajah lurus ke depan dan isi area tengah kamera.' },
+                { pose: 'depan', title: 'Tetap lihat depan', text: 'Jaga wajah tetap stabil, jangan terlalu jauh dari kamera.' },
+                { pose: 'depan', title: 'Lihat depan dengan cahaya cukup', text: 'Pastikan wajah terang dan tidak tertutup bayangan.' },
+                { pose: 'depan', title: 'Pertahankan wajah depan', text: 'Jangan ada wajah lain masuk ke dalam frame.' },
+                { pose: 'depan', title: 'Satu lagi posisi depan', text: 'Tetap netral, jangan menunduk atau mendongak.' },
+                { pose: 'kiri', title: 'Tengok kiri', text: 'Putar kepala sedikit ke kiri, jangan terlalu ekstrem.' },
+                { pose: 'kiri', title: 'Pertahankan ke kiri', text: 'Pastikan mata dan hidung masih terlihat jelas.' },
+                { pose: 'kiri', title: 'Sedikit kiri lagi', text: 'Jaga wajah tetap dekat ke kamera saat menoleh kiri.' },
+                { pose: 'kiri', title: 'Tahan pose kiri', text: 'Cahaya tetap harus cukup terang pada wajah.' },
+                { pose: 'kiri', title: 'Terakhir pose kiri', text: 'Pastikan wajah tidak blur saat tertangkap kamera.' },
+                { pose: 'kanan', title: 'Tengok kanan', text: 'Putar kepala sedikit ke kanan, tetap santai.' },
+                { pose: 'kanan', title: 'Pertahankan ke kanan', text: 'Usahakan wajah masih berada di tengah frame.' },
+                { pose: 'kanan', title: 'Sedikit kanan lagi', text: 'Jangan terlalu menunduk saat menoleh ke kanan.' },
+                { pose: 'kanan', title: 'Tahan pose kanan', text: 'Biarkan sistem menyimpan beberapa variasi sudut kanan.' },
+                { pose: 'kanan', title: 'Terakhir pose kanan', text: 'Setelah tersimpan, dataset akan selesai otomatis.' }
+            ];
+
+            function getCenterPoint(points) {
+                const total = points.reduce((accumulator, point) => {
+                    accumulator.x += point.x;
+                    accumulator.y += point.y;
+
+                    return accumulator;
+                }, { x: 0, y: 0 });
+
+                return {
+                    x: total.x / points.length,
+                    y: total.y / points.length
+                };
+            }
+
+            function detectHeadDirection(landmarks) {
+                const nose = landmarks.getNose();
+                const leftEyeCenter = getCenterPoint(landmarks.getLeftEye());
+                const rightEyeCenter = getCenterPoint(landmarks.getRightEye());
+                const eyeCenterX = (leftEyeCenter.x + rightEyeCenter.x) / 2;
+                const noseTipX = nose[3].x;
+                const diff = noseTipX - eyeCenterX;
+
+                if (diff > 12) return 'kanan';
+                if (diff < -12) return 'kiri';
+
+                return 'depan';
+            }
+
+            function updateInstruction() {
+                const currentStep = captureSteps[Math.min(datasetCount, captureSteps.length - 1)];
+
+                instructionTitle.innerText = currentStep.title;
+                instructionText.innerText = currentStep.text;
+            }
+
+            function isFaceCloseEnough(box) {
+                return box.width >= 140 && box.height >= 140;
+            }
 
             async function loadModels() {
                 await faceapi.nets.tinyFaceDetector.loadFromUri('/models/tiny_face_detector');
@@ -109,6 +184,7 @@
             function updateProgress() {
                 datasetCounter.innerText = `Dataset: ${datasetCount} / ${maxDataset}`;
                 datasetProgress.style.width = `${(datasetCount / maxDataset) * 100}%`;
+                updateInstruction();
             }
 
             video.addEventListener('play', () => {
@@ -121,6 +197,7 @@
                 canvas.height = video.height;
 
                 faceapi.matchDimensions(canvas, displaySize);
+                updateInstruction();
 
                 captureInterval = setInterval(async () => {
                     if (datasetCount >= maxDataset) {
@@ -149,10 +226,34 @@
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     faceapi.draw.drawDetections(canvas, resized);
 
-                    if (detections.length > 0 && !isSaving) {
+                    if (detections.length === 1 && !isSaving) {
+                        const currentStep = captureSteps[Math.min(datasetCount, captureSteps.length - 1)];
+                        const detection = detections[0];
+                        const headDirection = detectHeadDirection(detection.landmarks);
+                        const faceBox = detection.detection.box;
+
+                        if (!isFaceCloseEnough(faceBox)) {
+                            instructionTitle.innerText = 'Dekatkan wajah ke kamera';
+                            instructionText.innerText = 'Wajah masih terlalu jauh. Dekatkan sedikit lalu tahan posisi.';
+                            return;
+                        }
+
+                        if (headDirection !== currentStep.pose) {
+                            if (currentStep.pose === 'depan') {
+                                instructionTitle.innerText = 'Lihat lurus ke depan';
+                            } else if (currentStep.pose === 'kiri') {
+                                instructionTitle.innerText = 'Arahkan wajah ke kiri';
+                            } else {
+                                instructionTitle.innerText = 'Arahkan wajah ke kanan';
+                            }
+
+                            instructionText.innerText = currentStep.text;
+                            return;
+                        }
+
                         isSaving = true;
 
-                        const descriptor = detections[0].descriptor;
+                        const descriptor = detection.descriptor;
                         await saveDataset(descriptor);
 
                         datasetCount++;
@@ -181,6 +282,19 @@
                     console.error(error);
                 }
             }
+        </script>
+    @endif
+
+    @if($forceDatasetRegistration || $datasetCount < $minDataset)
+        <script>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Daftarkan Dataset Dulu',
+                text: 'Dataset wajah Anda belum lengkap atau telah dihapus admin. Lengkapi dataset terlebih dahulu sebelum mengakses fitur lain.',
+                confirmButtonText: 'Mengerti',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            });
         </script>
     @endif
 

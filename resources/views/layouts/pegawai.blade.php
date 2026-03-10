@@ -451,7 +451,7 @@
 </head>
 <body>
     @php
-        $showDatasetMenu = auth()->user()->dataset_wajahs()->count() < 30;
+        $showDatasetMenu = auth()->user()->dataset_wajahs()->count() < 15;
     @endphp
 
     <div id="app">

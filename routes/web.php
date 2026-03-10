@@ -77,6 +77,7 @@ Route::prefix('admin')
     Route::get('dataset',[DatasetController::class,'index'])->name('dataset.index');
     Route::post('dataset/store',[DatasetController::class,'store'])->name('dataset.store');
     Route::get('dataset/load',[DatasetController::class,'load'])->name('dataset.load');
+    Route::delete('dataset/delete/{pegawaiId}',[DatasetController::class,'destroy'])->name('dataset.delete');
 
 
     /* ABSENSI */
@@ -87,9 +88,7 @@ Route::prefix('admin')
 
     /* LAPORAN */
 
-    Route::get('laporan', function () {
-        return view('admin.laporan.index');
-    })->name('laporan.index');
+    Route::get('laporan', [AbsensiController::class,'laporan'])->name('laporan.index');
 
 });
 
@@ -105,14 +104,15 @@ Route::prefix('pegawai')
     ->name('pegawai.')
     ->group(function(){
 
-    Route::get('/dashboard',[AbsensiPegawaiController::class,'dashboard'])->name('dashboard');
-
     Route::get('/dataset',[DatasetPegawaiController::class,'index'])->name('dataset');
     Route::post('/dataset/store',[DatasetPegawaiController::class,'store'])->name('dataset.store');
     Route::get('/dataset/load',[DatasetPegawaiController::class,'load'])->name('dataset.load');
 
-    Route::get('/absensi',[AbsensiPegawaiController::class,'index'])->name('absensi');
-    Route::post('/absensi/store',[AbsensiPegawaiController::class,'store'])->name('absensi.store');
-    Route::get('/riwayat-absensi',[AbsensiPegawaiController::class,'riwayat'])->name('riwayat');
+    Route::middleware('pegawai.dataset.completed')->group(function () {
+        Route::get('/dashboard',[AbsensiPegawaiController::class,'dashboard'])->name('dashboard');
+        Route::get('/absensi',[AbsensiPegawaiController::class,'index'])->name('absensi');
+        Route::post('/absensi/store',[AbsensiPegawaiController::class,'store'])->name('absensi.store');
+        Route::get('/riwayat-absensi',[AbsensiPegawaiController::class,'riwayat'])->name('riwayat');
+    });
 
 });
