@@ -126,18 +126,18 @@ class="rounded-circle mr-1">
   </a>
 </li>
 
+<li class="{{ request()->is('admin/hari-libur*') ? 'active' : '' }}">
+  <a class="nav-link" href="{{ route('admin.hari-libur.index') }}">
+    <i class="fas fa-calendar-times"></i>
+    <span>Hari Libur</span>
+  </a>
+</li>
+
 <li class="{{ request()->is('admin/pegawai*') ? 'active' : '' }}">
   <a class="nav-link" href="{{ route('admin.pegawai.index') }}">
     <i class="fas fa-users"></i>
     <span>Pegawai</span>
   </a>
-</li>
-
-<li class="{{ request()->is('admin/absensi*') ? 'active' : '' }}">
-<a class="nav-link" href="{{ route('admin.absensi.index') }}">
-<i class="fas fa-users"></i>
-<span>Absen</span>
-</a>
 </li>
 
 <li class="{{ request()->is('admin/dataset*') ? 'active' : '' }}">
@@ -149,10 +149,38 @@ class="rounded-circle mr-1">
 
 <li class="menu-header">LAPORAN</li>
 
-<li class="{{ request()->is('admin/laporan*') ? 'active' : '' }}">
+<li class="{{ request()->routeIs('admin.laporan.index') ? 'active' : '' }}">
 <a class="nav-link" href="{{ route('admin.laporan.index') }}">
 <i class="fas fa-file"></i>
 <span>Laporan Kehadiran</span>
+</a>
+</li>
+
+<li class="{{ request()->routeIs('admin.laporan.tepat-waktu') ? 'active' : '' }}">
+<a class="nav-link" href="{{ route('admin.laporan.tepat-waktu') }}">
+<i class="fas fa-user-check"></i>
+<span>Laporan Tepat Waktu</span>
+</a>
+</li>
+
+<li class="{{ request()->routeIs('admin.laporan.terlambat') ? 'active' : '' }}">
+<a class="nav-link" href="{{ route('admin.laporan.terlambat') }}">
+<i class="fas fa-user-clock"></i>
+<span>Laporan Keterlambatan</span>
+</a>
+</li>
+
+<li class="{{ request()->routeIs('admin.laporan.pulang-cepat') ? 'active' : '' }}">
+<a class="nav-link" href="{{ route('admin.laporan.pulang-cepat') }}">
+<i class="fas fa-running"></i>
+<span>Laporan Pulang Cepat</span>
+</a>
+</li>
+
+<li class="{{ request()->routeIs('admin.laporan.rekap-bulanan') ? 'active' : '' }}">
+<a class="nav-link" href="{{ route('admin.laporan.rekap-bulanan') }}">
+<i class="fas fa-calendar-alt"></i>
+<span>Laporan Rekap Bulanan</span>
 </a>
 </li>
 

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\JadwalKerjaController;
 use App\Http\Controllers\Admin\PegawaiController;
 use App\Http\Controllers\Admin\DatasetController;
 use App\Http\Controllers\Admin\AbsensiController;
+use App\Http\Controllers\Admin\HariLiburController;
 
 use App\Http\Controllers\Pegawai\DatasetPegawaiController;
 use App\Http\Controllers\Pegawai\AbsensiPegawaiController;
@@ -62,6 +63,10 @@ Route::prefix('admin')
     Route::get('jadwal/edit/{id}',[JadwalKerjaController::class,'edit']);
     Route::delete('jadwal/delete/{id}',[JadwalKerjaController::class,'delete']);
 
+    Route::get('hari-libur',[HariLiburController::class,'index'])->name('hari-libur.index');
+    Route::post('hari-libur/store',[HariLiburController::class,'store'])->name('hari-libur.store');
+    Route::delete('hari-libur/delete/{id}',[HariLiburController::class,'destroy'])->name('hari-libur.delete');
+
 
     /* PEGAWAI */
 
@@ -89,6 +94,15 @@ Route::prefix('admin')
     /* LAPORAN */
 
     Route::get('laporan', [AbsensiController::class,'laporan'])->name('laporan.index');
+    Route::get('laporan/export-excel', [AbsensiController::class,'exportExcel'])->name('laporan.export-excel');
+    Route::get('laporan/tepat-waktu', [AbsensiController::class,'laporanTepatWaktu'])->name('laporan.tepat-waktu');
+    Route::get('laporan/tepat-waktu/export-excel', [AbsensiController::class,'exportExcelTepatWaktu'])->name('laporan.tepat-waktu.export-excel');
+    Route::get('laporan/terlambat', [AbsensiController::class,'laporanTerlambat'])->name('laporan.terlambat');
+    Route::get('laporan/terlambat/export-excel', [AbsensiController::class,'exportExcelTerlambat'])->name('laporan.terlambat.export-excel');
+    Route::get('laporan/pulang-cepat', [AbsensiController::class,'laporanPulangCepat'])->name('laporan.pulang-cepat');
+    Route::get('laporan/pulang-cepat/export-excel', [AbsensiController::class,'exportExcelPulangCepat'])->name('laporan.pulang-cepat.export-excel');
+    Route::get('laporan/rekap-bulanan', [AbsensiController::class,'laporanRekapBulanan'])->name('laporan.rekap-bulanan');
+    Route::get('laporan/rekap-bulanan/export-excel', [AbsensiController::class,'exportExcelRekapBulanan'])->name('laporan.rekap-bulanan.export-excel');
 
 });
 

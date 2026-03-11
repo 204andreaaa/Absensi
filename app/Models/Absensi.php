@@ -14,7 +14,11 @@ class Absensi extends Model
         'tanggal',
         'jam_masuk',
         'jam_pulang',
-        'status'
+        'status',
+        'alasan_telat',
+        'alasan_pulang_awal',
+        'foto_masuk',
+        'foto_pulang'
 
     ];
 

@@ -541,56 +541,25 @@
         </div>
 
         <nav class="pegawai-bottom-nav">
-            <a
-                href="{{ route('pegawai.dashboard') }}"
-                class="{{ request()->routeIs('pegawai.dashboard') ? 'active' : '' }}"
-            >
+            <a href="{{ route('pegawai.dashboard') }}" class="{{ request()->routeIs('pegawai.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-home"></i>
                 <span>Home</span>
             </a>
 
-            <a
-                href="{{ route('pegawai.absensi') }}"
-                class="{{ request()->routeIs('pegawai.absensi') ? 'active' : '' }}"
-            >
+            <a href="{{ route('pegawai.dataset') }}" class="{{ request()->routeIs('pegawai.dataset') ? 'active' : '' }}">
+                <i class="fas fa-database"></i>
+                <span>Dataset</span>
+            </a>
+
+            <a href="{{ route('pegawai.absensi') }}" class="{{ request()->routeIs('pegawai.absensi') ? 'active' : '' }}">
                 <i class="fas fa-camera"></i>
                 <span>Absen</span>
             </a>
 
-            @if($showDatasetMenu)
-                <a
-                    href="{{ route('pegawai.dataset') }}"
-                    class="{{ request()->routeIs('pegawai.dataset') ? 'active' : '' }}"
-                >
-                    <i class="fas fa-database"></i>
-                    <span>Dataset</span>
-                </a>
-            @else
-                <a
-                    href="{{ route('pegawai.riwayat') }}"
-                    class="{{ request()->routeIs('pegawai.riwayat') ? 'active' : '' }}"
-                >
-                    <i class="fas fa-history"></i>
-                    <span>Riwayat</span>
-                </a>
-            @endif
-
-            <form method="POST" action="{{ route('logout') }}" class="m-0">
-                @csrf
-                <button
-                    type="submit"
-                    class="w-100 border-0 bg-transparent p-0 h-100"
-                    style="outline: none;"
-                >
-                    <span
-                        class="d-flex flex-column align-items-center justify-content-center"
-                        style="gap: 5px; padding: 10px 6px; border-radius: 18px; color: var(--pegawai-muted); font-size: 0.72rem; font-weight: 700;"
-                    >
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Keluar</span>
-                    </span>
-                </button>
-            </form>
+            <a href="{{ route('pegawai.riwayat') }}" class="{{ request()->routeIs('pegawai.riwayat') ? 'active' : '' }}">
+                <i class="fas fa-history"></i>
+                <span>Riwayat</span>
+            </a>
         </nav>
     </div>
 

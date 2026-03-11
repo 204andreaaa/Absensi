@@ -24,12 +24,11 @@
                             <th>Pegawai</th>
                             <th>Tanggal</th>
                             <th>Shift</th>
-                            <th>Jadwal Masuk</th>
-                            <th>Toleransi</th>
-                            <th>Jam Masuk Aktual</th>
-                            <th>Selisih Telat</th>
-                            <th>Alasan Telat</th>
-                            <th>Foto Masuk</th>
+                            <th>Jadwal Pulang</th>
+                            <th>Jam Pulang Aktual</th>
+                            <th>Selisih Pulang Awal</th>
+                            <th>Alasan Pulang Awal</th>
+                            <th>Foto Pulang</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,17 +38,16 @@
                                 <td>{{ optional($item->pegawai)->nama ?? 'Pegawai Tidak Diketahui' }}</td>
                                 <td>{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') }}</td>
                                 <td>{{ $item->shift_label }}</td>
-                                <td>{{ optional(optional($item->pegawai)->jadwal)->jam_masuk ?? '-' }}</td>
-                                <td>{{ $item->toleransi_telat_label }}</td>
-                                <td>{{ $item->jam_masuk ?? '-' }}</td>
-                                <td><span class="badge badge-warning">{{ $item->selisih_telat_label }}</span></td>
-                                <td>{{ $item->alasan_telat ?? '-' }}</td>
+                                <td>{{ optional(optional($item->pegawai)->jadwal)->jam_pulang ?? '-' }}</td>
+                                <td>{{ $item->jam_pulang ?? '-' }}</td>
+                                <td><span class="badge badge-danger">{{ $item->selisih_pulang_cepat_label }}</span></td>
+                                <td>{{ $item->alasan_pulang_awal ?? '-' }}</td>
                                 <td>
-                                    @if($item->foto_masuk)
-                                        <a href="{{ asset('storage/' . $item->foto_masuk) }}" target="_blank">
+                                    @if($item->foto_pulang)
+                                        <a href="{{ asset('storage/' . $item->foto_pulang) }}" target="_blank">
                                             <img
-                                                src="{{ asset('storage/' . $item->foto_masuk) }}"
-                                                alt="Foto Masuk"
+                                                src="{{ asset('storage/' . $item->foto_pulang) }}"
+                                                alt="Foto Pulang"
                                                 style="width: 72px; height: 72px; object-fit: cover; border-radius: 8px;"
                                             >
                                         </a>
@@ -60,8 +58,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="text-center text-muted py-4">
-                                    Belum ada data keterlambatan.
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    Belum ada data pulang cepat.
                                 </td>
                             </tr>
                         @endforelse
