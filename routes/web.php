@@ -22,7 +22,7 @@ use App\Http\Controllers\Pegawai\AbsensiPegawaiController;
 */
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('auth.login');
 });
 
 Route::get('/login',[AuthController::class,'loginForm'])->name('login');

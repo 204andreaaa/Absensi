@@ -39,7 +39,7 @@ autoplay
 muted
 playsinline
 class="d-block"
-style="max-width: 100%; height: auto;"
+style="max-width: 100%; height: auto; transform: scaleX(-1);"
 
 > </video>
 
@@ -100,6 +100,7 @@ let detectionInterval = null
 let absenDone = false
 let gestureStep = 0
 let absensiMode = null
+const faceMatchThreshold = 0.55
 
 const gestures = [
 'Hadap Kiri',
@@ -197,9 +198,9 @@ const noseTipX = nose[3].x
 
 const diff = noseTipX - eyeCenterX
 
-if(diff > 12) return 'kanan'
+if(diff > 12) return 'kiri'
 
-if(diff < -12) return 'kiri'
+if(diff < -12) return 'kanan'
 
 return 'tengah'
 
@@ -222,12 +223,34 @@ if(match.label === 'unknown'){
 return 'Unknown'
 }
 
+const normalizedDistance = Math.max(
+0,
+Math.min(1.5, match.distance / faceMatchThreshold)
+)
+
 const confidence = Math.max(
 0,
-Math.min(100, Math.round((1 - match.distance) * 100))
+Math.min(100, Math.round(100 - (normalizedDistance * 20)))
 )
 
 return match.label + " (" + confidence + "%)"
+
+}
+
+function isMatchValid(match){
+
+return match.label !== 'unknown' && match.distance <= faceMatchThreshold
+
+}
+
+function mirrorBox(box, displayWidth){
+
+return {
+x: displayWidth - box.x - box.width,
+y: box.y,
+width: box.width,
+height: box.height
+}
 
 }
 
@@ -278,8 +301,9 @@ resizedDetections.forEach((detection)=>{
 const match = faceMatcher.findBestMatch(detection.descriptor)
 
 const label = formatMatchLabel(match)
+const matchIsValid = isMatchValid(match)
 
-const drawBox = new faceapi.draw.DrawBox(detection.detection.box,{
+const drawBox = new faceapi.draw.DrawBox(mirrorBox(detection.detection.box, displaySize.width),{
 label
 })
 
@@ -288,6 +312,15 @@ drawBox.draw(overlay)
 resultText.innerText = "Terdeteksi : " + label
 
 const landmarks = detection.landmarks
+
+if(!matchIsValid){
+
+gestureStep = 0
+gestureText.innerText = "Wajah tidak dikenali. Dekatkan wajah, cari cahaya yang cukup, atau ulangi perekaman dataset."
+
+return
+
+}
 
 if(gestureStep === 0){
 
@@ -472,7 +505,7 @@ return
 
 }
 
-const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors,0.6)
+const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors,faceMatchThreshold)
 
 if(video.readyState >= 2){
 

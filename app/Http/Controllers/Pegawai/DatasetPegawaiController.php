@@ -44,7 +44,11 @@ public function store(Request $request)
 public function load()
 {
 
-    $datasets = \App\Models\DatasetWajah::with('pegawai')->get();
+    $pegawaiId = Auth::id();
+
+    $datasets = DatasetWajah::with('pegawai')
+        ->where('pegawai_id', $pegawaiId)
+        ->get();
 
     $data = [];
 

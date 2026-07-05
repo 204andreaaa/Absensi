@@ -56,8 +56,8 @@
                         <div class="camera-wrapper">
                             <video
                                 id="video"
-                                width="420"
-                                height="320"
+                                width="640"
+                                height="480"
                                 autoplay
                                 muted
                                 playsinline
@@ -98,6 +98,12 @@
             const maxDataset = {{ $minDataset }};
             let captureInterval = null;
             let isSaving = false;
+            const savedDescriptors = [];
+            const minimumDetectionScore = 0.68;
+            const minimumFaceSizeRatio = 0.24;
+            const maximumFaceSizeRatio = 0.9;
+            const minimumDescriptorDistance = 0.16;
+            const centerToleranceRatio = 0.34;
             const captureSteps = [
                 { pose: 'depan', title: 'Dekatkan wajah ke kamera', text: 'Posisikan wajah lurus ke depan dan isi area tengah kamera.' },
                 { pose: 'depan', title: 'Tetap lihat depan', text: 'Jaga wajah tetap stabil, jangan terlalu jauh dari kamera.' },
@@ -138,8 +144,8 @@
                 const noseTipX = nose[3].x;
                 const diff = noseTipX - eyeCenterX;
 
-                if (diff > 12) return 'kanan';
-                if (diff < -12) return 'kiri';
+                if (diff > 12) return 'kiri';
+                if (diff < -12) return 'kanan';
 
                 return 'depan';
             }
@@ -151,8 +157,58 @@
                 instructionText.innerText = currentStep.text;
             }
 
-            function isFaceCloseEnough(box) {
-                return box.width >= 140 && box.height >= 140;
+            function getFaceSizeLimits(displaySize) {
+                const baseSize = Math.min(displaySize.width, displaySize.height);
+
+                return {
+                    minimum: baseSize * minimumFaceSizeRatio,
+                    maximum: baseSize * maximumFaceSizeRatio
+                };
+            }
+
+            function isFaceCloseEnough(box, displaySize) {
+                return box.width >= getFaceSizeLimits(displaySize).minimum && box.height >= getFaceSizeLimits(displaySize).minimum;
+            }
+
+            function isFaceTooClose(box, displaySize) {
+                return box.width > getFaceSizeLimits(displaySize).maximum || box.height > getFaceSizeLimits(displaySize).maximum;
+            }
+
+            function isFaceCentered(box, displaySize) {
+                const faceCenterX = box.x + (box.width / 2);
+                const faceCenterY = box.y + (box.height / 2);
+                const centerX = displaySize.width / 2;
+                const centerY = displaySize.height / 2;
+                const toleranceX = displaySize.width * centerToleranceRatio;
+                const toleranceY = displaySize.height * centerToleranceRatio;
+
+                return Math.abs(faceCenterX - centerX) <= toleranceX && Math.abs(faceCenterY - centerY) <= toleranceY;
+            }
+
+            function descriptorDistance(firstDescriptor, secondDescriptor) {
+                let total = 0;
+
+                for (let index = 0; index < firstDescriptor.length; index++) {
+                    const diff = firstDescriptor[index] - secondDescriptor[index];
+                    total += diff * diff;
+                }
+
+                return Math.sqrt(total);
+            }
+
+            function isDescriptorTooSimilar(descriptor) {
+                return savedDescriptors.some((savedDescriptor) => {
+                    return descriptorDistance(savedDescriptor, descriptor) < minimumDescriptorDistance;
+                });
+            }
+
+            function mirrorBox(box, displayWidth) {
+                return {
+                    x: displayWidth - box.x - box.width,
+                    y: box.y,
+                    width: box.width,
+                    height: box.height
+                };
             }
 
             async function loadModels() {
@@ -165,10 +221,18 @@
                 await loadModels();
 
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: true
+                    video: {
+                        facingMode: 'user',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
                 });
 
                 video.srcObject = stream;
+                video.setAttribute('playsinline', 'true');
+                video.muted = true;
+                try { await video.play(); } catch (error) { console.log(error); }
             }
 
             function stopCamera() {
@@ -224,17 +288,39 @@
                     const ctx = canvas.getContext('2d');
 
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    faceapi.draw.drawDetections(canvas, resized);
+                    resized.forEach((detection) => {
+                        new faceapi.draw.DrawBox(mirrorBox(detection.detection.box, displaySize.width)).draw(canvas);
+                    });
 
                     if (detections.length === 1 && !isSaving) {
                         const currentStep = captureSteps[Math.min(datasetCount, captureSteps.length - 1)];
                         const detection = detections[0];
+                        const resizedDetection = resized[0];
                         const headDirection = detectHeadDirection(detection.landmarks);
-                        const faceBox = detection.detection.box;
+                        const faceBox = resizedDetection.detection.box;
+                        const detectionScore = detection.detection.score || 0;
 
-                        if (!isFaceCloseEnough(faceBox)) {
+                        if (!isFaceCloseEnough(faceBox, displaySize)) {
                             instructionTitle.innerText = 'Dekatkan wajah ke kamera';
                             instructionText.innerText = 'Wajah masih terlalu jauh. Dekatkan sedikit lalu tahan posisi.';
+                            return;
+                        }
+
+                        if (isFaceTooClose(faceBox, displaySize)) {
+                            instructionTitle.innerText = 'Mundur sedikit';
+                            instructionText.innerText = 'Wajah terlalu dekat. Beri jarak sedikit agar seluruh wajah terbaca jelas.';
+                            return;
+                        }
+
+                        if (!isFaceCentered(faceBox, displaySize)) {
+                            instructionTitle.innerText = 'Tengah dulu';
+                            instructionText.innerText = 'Posisikan wajah di tengah frame sebelum dataset disimpan.';
+                            return;
+                        }
+
+                        if (detectionScore < minimumDetectionScore) {
+                            instructionTitle.innerText = 'Perjelas wajah';
+                            instructionText.innerText = 'Deteksi wajah belum cukup yakin. Cari cahaya lebih terang dan tahan posisi.';
                             return;
                         }
 
@@ -254,7 +340,18 @@
                         isSaving = true;
 
                         const descriptor = detection.descriptor;
+
+                        if (isDescriptorTooSimilar(descriptor)) {
+                            instructionTitle.innerText = 'Variasi kurang';
+                            instructionText.innerText = 'Pose terlalu mirip dengan data sebelumnya. Ubah sedikit sudut wajah lalu tahan.';
+                            setTimeout(() => {
+                                isSaving = false;
+                            }, 900);
+                            return;
+                        }
+
                         await saveDataset(descriptor);
+                        savedDescriptors.push(new Float32Array(descriptor));
 
                         datasetCount++;
                         updateProgress();
@@ -303,7 +400,8 @@
             position: relative;
             display: inline-block;
             width: 100%;
-            max-width: 420px;
+            max-width: 640px;
+            aspect-ratio: 4 / 3;
             border-radius: 22px;
             overflow: hidden;
             background: #081120;
@@ -312,14 +410,18 @@
 
         .camera-video {
             width: 100%;
-            height: auto;
+            height: 100%;
             display: block;
+            object-fit: cover;
+            transform: scaleX(-1);
         }
 
         .camera-overlay {
             position: absolute;
             top: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
         }
     </style>
 @endpush

@@ -2,59 +2,70 @@
 
 @push('styles')
     <style>
-        .attendance-shell { display: grid; gap: 24px; }
-        .attendance-hero { position: relative; overflow: hidden; border-radius: 24px; background: linear-gradient(135deg, #f8fbff 0%, #eef5fb 100%); box-shadow: 0 18px 40px rgba(148, 163, 184, 0.14); }
-        .attendance-hero__content { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 22px; }
+        .attendance-shell { display: grid; gap: 18px; }
+        .attendance-hero { position: relative; overflow: hidden; border-radius: 8px; background: #101827; color: #f8fafc; box-shadow: 0 22px 52px rgba(15, 23, 42, 0.18); }
+        .attendance-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(115deg, rgba(14, 165, 233, 0.28), transparent 36%), linear-gradient(150deg, transparent 45%, rgba(20, 184, 166, 0.24)); pointer-events: none; }
+        .attendance-hero__content { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px; }
         .attendance-hero__copy { display: grid; gap: 8px; }
-        .attendance-label { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; background: rgba(37, 99, 235, 0.1); color: #31508f; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
-        .attendance-title { margin: 0; font-size: clamp(1.35rem, 3vw, 1.9rem); font-weight: 800; line-height: 1.1; color: #0f172a; }
-        .attendance-subtitle { margin: 0; max-width: 680px; color: #64748b; font-size: 0.95rem; line-height: 1.6; }
-        .attendance-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-        .mode-button { border: 0; border-radius: 18px; padding: 14px 18px; font-weight: 800; font-size: 1rem; transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease; }
-        .mode-button:hover { transform: translateY(-1px); }
-        .mode-button:disabled { opacity: 0.72; cursor: not-allowed; transform: none; }
-        .mode-button--masuk { background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 16px 30px rgba(34, 197, 94, 0.28); color: #fff; }
-        .mode-button--keluar { background: linear-gradient(135deg, #fb7185, #ef4444); box-shadow: 0 16px 30px rgba(239, 68, 68, 0.28); color: #fff; }
-        .verification-panel { display: grid; gap: 22px; padding: 24px; border-radius: 28px; background: linear-gradient(180deg, #f8fbff 0%, #eef5fb 100%); box-shadow: 0 24px 55px rgba(148, 163, 184, 0.18); }
+        .attendance-label { display: inline-flex; align-items: center; width: max-content; padding: 6px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.12); color: #bae6fd; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+        .attendance-title { margin: 0; font-size: clamp(1.35rem, 2.4vw, 2rem); font-weight: 850; line-height: 1.08; color: #fff; }
+        .attendance-subtitle { margin: 0; max-width: 720px; color: #cbd5e1; font-size: 0.96rem; line-height: 1.62; }
+        .attendance-actions { display: grid; grid-template-columns: repeat(2, minmax(140px, 1fr)); gap: 10px; min-width: min(100%, 340px); padding: 6px; border-radius: 8px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.14); }
+        .mode-button { border: 0; border-radius: 6px; padding: 13px 16px; font-weight: 850; font-size: 0.95rem; letter-spacing: 0.01em; transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, filter 0.18s ease; }
+        .mode-button:hover { transform: translateY(-1px); filter: brightness(1.03); }
+        .mode-button:disabled { opacity: 0.72; cursor: not-allowed; transform: none; filter: none; }
+        .mode-button--masuk { background: #17b26a; box-shadow: 0 14px 28px rgba(23, 178, 106, 0.24); color: #fff; }
+        .mode-button--keluar { background: #f04438; box-shadow: 0 14px 28px rgba(240, 68, 56, 0.24); color: #fff; }
+        .verification-panel { position: relative; display: grid; gap: 18px; padding: 18px; border-radius: 8px; background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(203, 213, 225, 0.86); box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14); overflow: hidden; }
+        .verification-panel::before { content: ''; position: absolute; left: 0; top: 0; right: 0; height: 4px; background: linear-gradient(90deg, #0ea5e9, #14b8a6, #22c55e); }
         .verification-panel__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-        .verification-panel__title { margin: 0; color: #0f172a; font-size: 1rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-        .info-trigger { width: 42px; height: 42px; border: 0; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: rgba(37, 99, 235, 0.1); color: #2563eb; box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12); transition: transform 0.18s ease, background 0.18s ease; }
-        .info-trigger:hover { transform: translateY(-1px); background: rgba(37, 99, 235, 0.14); }
-        .verification-camera { position: relative; aspect-ratio: 4 / 5; max-width: 420px; width: 100%; margin: 0 auto; border-radius: 30px; overflow: hidden; background: linear-gradient(180deg, #0f172a 0%, #020617 100%); box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.2), 0 28px 56px rgba(15, 23, 42, 0.25); }
-        .verification-camera::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15, 23, 42, 0.04) 0%, rgba(15, 23, 42, 0.35) 100%); pointer-events: none; z-index: 1; }
+        .verification-panel__title { margin: 0; color: #0f172a; font-size: 0.86rem; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; }
+        .verification-panel__actions { display: flex; align-items: center; gap: 10px; }
+        .info-trigger { width: 40px; height: 40px; border: 0; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: #e0f2fe; color: #0369a1; box-shadow: inset 0 0 0 1px rgba(14, 165, 233, 0.16); transition: transform 0.18s ease, background 0.18s ease; }
+        .info-trigger:hover { transform: translateY(-1px); background: #bae6fd; }
+        .modal-close-trigger { width: 40px; height: 40px; border: 0; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: #f1f5f9; color: #475569; transition: transform 0.18s ease, background 0.18s ease; }
+        .modal-close-trigger:hover { transform: translateY(-1px); background: #e2e8f0; }
+        .attendance-modal .modal-dialog { max-width: min(1120px, calc(100vw - 28px)); margin: 18px auto; }
+        .attendance-modal { z-index: 2080 !important; }
+        .modal-backdrop { z-index: 2070 !important; }
+        .attendance-modal .modal-content { border: 0; border-radius: 8px; background: transparent; box-shadow: none; }
+        .attendance-modal .modal-body { padding: 0; }
+        .verification-camera { position: relative; aspect-ratio: 4 / 5; max-width: 420px; width: 100%; margin: 0 auto; border-radius: 8px; overflow: hidden; background: #020617; box-shadow: 0 24px 48px rgba(15, 23, 42, 0.28); }
+        .verification-camera::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15, 23, 42, 0.02) 0%, rgba(15, 23, 42, 0.32) 100%); pointer-events: none; z-index: 1; }
+        .verification-camera::after { content: ''; position: absolute; inset: 12px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.12); pointer-events: none; z-index: 2; }
         .verification-video, .verification-overlay { position: absolute; inset: 0; width: 100%; height: 100%; }
-        .verification-video { object-fit: cover; display: block; }
+        .verification-video { object-fit: cover; display: block; transform: scaleX(-1); }
         .verification-overlay { pointer-events: none; z-index: 3; }
         .face-guide-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 2; pointer-events: none; }
-        .face-guide-ring { position: relative; width: min(72%, 290px); aspect-ratio: 0.82; border-radius: 48%; box-shadow: 0 0 0 999px rgba(2, 6, 23, 0.36), inset 0 0 0 2px rgba(255, 255, 255, 0.18); overflow: hidden; }
-        .face-guide-ring::before { content: ''; position: absolute; inset: -14px; border-radius: 48%; background: conic-gradient(from -90deg, #38bdf8 0deg, #2dd4bf var(--progress-angle, 0deg), rgba(255,255,255,0.14) var(--progress-angle, 0deg), rgba(255,255,255,0.08) 360deg); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 16px), #000 calc(100% - 15px)); mask: radial-gradient(farthest-side, transparent calc(100% - 16px), #000 calc(100% - 15px)); }
-        .face-guide-ring::after { content: ''; position: absolute; inset: 18px; border-radius: 46%; border: 1px dashed rgba(255, 255, 255, 0.36); }
-        .face-guide-pulse { position: absolute; inset: 10px; border-radius: 48%; border: 1px solid rgba(45, 212, 191, 0.55); animation: pulse-ring 2.2s ease-in-out infinite; opacity: 0.88; }
-        .face-guide-label { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 4; padding: 8px 14px; border-radius: 999px; background: rgba(15, 23, 42, 0.55); color: #f8fafc; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+        .face-guide-ring { position: relative; width: min(72%, 286px); aspect-ratio: 0.82; border-radius: 46%; box-shadow: 0 0 0 999px rgba(2, 6, 23, 0.30), inset 0 0 0 1px rgba(255, 255, 255, 0.24); overflow: hidden; }
+        .face-guide-ring::before { content: ''; position: absolute; inset: -14px; border-radius: 48%; background: conic-gradient(from -90deg, #38bdf8 0deg, #14b8a6 var(--progress-angle, 0deg), rgba(255,255,255,0.16) var(--progress-angle, 0deg), rgba(255,255,255,0.08) 360deg); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px)); mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px)); }
+        .face-guide-ring::after { content: ''; position: absolute; inset: 18px; border-radius: 44%; border: 1px dashed rgba(255, 255, 255, 0.42); }
+        .face-guide-pulse { position: absolute; inset: 10px; border-radius: 46%; border: 1px solid rgba(56, 189, 248, 0.58); animation: pulse-ring 2.2s ease-in-out infinite; opacity: 0.9; }
+        .face-guide-label { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 4; padding: 9px 15px; border-radius: 6px; background: rgba(15, 23, 42, 0.72); color: #f8fafc; box-shadow: 0 10px 24px rgba(2, 6, 23, 0.22); font-size: 0.76rem; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; }
         .verification-meta { display: grid; gap: 14px; }
-        .verification-result { text-align: center; }
-        .verification-result h5 { margin-bottom: 8px; font-size: 1.7rem; font-weight: 800; color: #0f172a; }
-        .verification-result p { margin: 0; color: #64748b; font-size: 1rem; line-height: 1.7; }
-        .status-band { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 18px; background: #fff; box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.95); }
-        .status-band__label { display: block; color: #94a3b8; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-        .status-band__value { margin-top: 4px; color: #0f172a; font-weight: 800; }
-        .status-pill { display: inline-flex; align-items: center; padding: 9px 12px; border-radius: 999px; font-size: 0.84rem; font-weight: 800; white-space: nowrap; }
-        .status-pill--idle { background: rgba(148, 163, 184, 0.15); color: #475569; }
-        .status-pill--scan { background: rgba(59, 130, 246, 0.14); color: #1d4ed8; }
-        .status-pill--success { background: rgba(34, 197, 94, 0.16); color: #15803d; }
-        .status-pill--error { background: rgba(239, 68, 68, 0.14); color: #b91c1c; }
+        .verification-result { padding: 18px; text-align: left; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; }
+        .verification-result h5 { margin-bottom: 8px; font-size: clamp(1.26rem, 2vw, 1.7rem); font-weight: 850; line-height: 1.15; color: #0f172a; }
+        .verification-result p { margin: 0; color: #64748b; font-size: 0.96rem; line-height: 1.65; }
+        .status-band { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0; }
+        .status-band__label { display: block; color: #94a3b8; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+        .status-band__value { margin-top: 4px; color: #0f172a; font-weight: 850; }
+        .status-pill { display: inline-flex; align-items: center; padding: 8px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 850; white-space: nowrap; }
+        .status-pill--idle { background: #f1f5f9; color: #475569; }
+        .status-pill--scan { background: #dbeafe; color: #1d4ed8; }
+        .status-pill--success { background: #dcfce7; color: #15803d; }
+        .status-pill--error { background: #fee2e2; color: #b91c1c; }
         .step-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-        .step-card { padding: 16px 14px; border-radius: 22px; background: rgba(255, 255, 255, 0.88); box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.95); transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
-        .step-card.is-active { background: linear-gradient(135deg, rgba(96, 165, 250, 0.18), rgba(45, 212, 191, 0.16)); box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.18); transform: translateY(-2px); }
-        .step-card.is-complete { background: linear-gradient(135deg, rgba(34, 197, 94, 0.16), rgba(16, 185, 129, 0.18)); box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.18); }
-        .step-card__number { width: 34px; height: 34px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: #e2e8f0; color: #475569; font-weight: 800; }
-        .step-card.is-active .step-card__number { background: #2563eb; color: #fff; box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.12); }
+        .step-card { position: relative; padding: 14px; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0; transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease; }
+        .step-card.is-active { background: #eff6ff; border-color: #93c5fd; transform: translateY(-1px); }
+        .step-card.is-complete { background: #ecfdf3; border-color: #86efac; }
+        .step-card__number { width: 30px; height: 30px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: #f1f5f9; color: #475569; font-weight: 850; }
+        .step-card.is-active .step-card__number { background: #2563eb; color: #fff; }
         .step-card.is-complete .step-card__number { background: #16a34a; color: #fff; }
-        .step-card__title { margin-top: 14px; margin-bottom: 4px; font-size: 0.94rem; font-weight: 800; color: #0f172a; }
-        .step-card__caption { color: #64748b; font-size: 0.82rem; line-height: 1.5; }
+        .step-card__title { margin-top: 12px; margin-bottom: 4px; font-size: 0.9rem; font-weight: 850; color: #0f172a; }
+        .step-card__caption { color: #64748b; font-size: 0.78rem; line-height: 1.45; }
         @keyframes pulse-ring { 0%,100% { transform: scale(0.985); opacity: 0.8; } 50% { transform: scale(1.02); opacity: 1; } }
-        @media (max-width: 991.98px) { .step-grid, .attendance-actions { grid-template-columns: 1fr; } .attendance-hero__content { flex-direction: column; align-items: stretch; } }
-        @media (max-width: 575.98px) { .attendance-hero__content, .verification-panel { padding: 18px; } .verification-result h5 { font-size: 1.42rem; } .status-band { flex-direction: column; align-items: flex-start; } }
+        @media (max-width: 991.98px) { .step-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .attendance-hero__content { flex-direction: column; align-items: stretch; } }
+        @media (max-width: 575.98px) { .attendance-hero__content, .verification-panel { padding: 14px; } .attendance-actions { grid-template-columns: 1fr; } .step-grid { grid-template-columns: 1fr; } .status-band { align-items: flex-start; flex-direction: column; } .attendance-modal .modal-dialog { max-width: calc(100vw - 16px); margin: 8px auto; } }
     </style>
 @endpush
 
@@ -84,43 +95,56 @@
             </div>
         </div>
 
-        <div class="verification-panel">
-            <div class="verification-panel__top">
-                <h3 class="verification-panel__title">Live Verification</h3>
-                <button type="button" class="info-trigger" id="infoTrigger" aria-label="Lihat panduan absensi">
-                    <i class="fas fa-info"></i>
-                </button>
-            </div>
+        <div class="modal fade attendance-modal" id="attendanceCameraModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="false">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="verification-panel">
+                            <div class="verification-panel__top">
+                                <h3 class="verification-panel__title">Live Verification</h3>
+                                <div class="verification-panel__actions">
+                                    <button type="button" class="info-trigger" id="infoTrigger" aria-label="Lihat panduan absensi">
+                                        <i class="fas fa-info"></i>
+                                    </button>
+                                    <button type="button" class="modal-close-trigger" data-dismiss="modal" aria-label="Tutup kamera">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-            <div class="step-grid">
-                <div class="step-card is-active" data-step-card="0"><div class="step-card__number">1</div><div class="step-card__title">Wajah Dikenali</div><div class="step-card__caption">Pastikan wajah terbaca jelas oleh kamera.</div></div>
-                <div class="step-card" data-step-card="1"><div class="step-card__number">2</div><div class="step-card__title">Hadap Kiri</div><div class="step-card__caption">Ikuti arahan dan miringkan wajah ke kiri.</div></div>
-                <div class="step-card" data-step-card="2"><div class="step-card__number">3</div><div class="step-card__title">Hadap Kanan</div><div class="step-card__caption">Kembalikan posisi dan lanjutkan ke kanan.</div></div>
-                <div class="step-card" data-step-card="3"><div class="step-card__number">4</div><div class="step-card__title">Buka Mulut</div><div class="step-card__caption">Selesaikan gesture akhir untuk konfirmasi.</div></div>
-            </div>
+                            <div class="step-grid">
+                                <div class="step-card is-active" data-step-card="0"><div class="step-card__number">1</div><div class="step-card__title">Wajah Dikenali</div><div class="step-card__caption">Pastikan wajah terbaca jelas oleh kamera.</div></div>
+                                <div class="step-card" data-step-card="1"><div class="step-card__number">2</div><div class="step-card__title">Hadap Kiri</div><div class="step-card__caption">Ikuti arahan dan miringkan wajah ke kiri.</div></div>
+                                <div class="step-card" data-step-card="2"><div class="step-card__number">3</div><div class="step-card__title">Hadap Kanan</div><div class="step-card__caption">Kembalikan posisi dan lanjutkan ke kanan.</div></div>
+                                <div class="step-card" data-step-card="3"><div class="step-card__number">4</div><div class="step-card__title">Buka Mulut</div><div class="step-card__caption">Selesaikan gesture akhir untuk konfirmasi.</div></div>
+                            </div>
 
-            <div class="row align-items-center">
-                <div class="col-lg-7 text-center text-lg-left mb-4 mb-lg-0">
-                    <div class="verification-camera">
-                        <video id="video" autoplay muted playsinline class="verification-video"></video>
-                        <canvas id="overlay" class="verification-overlay"></canvas>
-                        <div class="face-guide-wrap"><div class="face-guide-ring" id="faceGuideRing" style="--progress-angle: 0deg;"><div class="face-guide-pulse"></div></div></div>
-                        <div class="face-guide-label" id="cameraGuideLabel">Scan Wajah</div>
-                    </div>
-                </div>
-                <div class="col-lg-5">
-                    <div class="verification-meta">
-                        <div class="verification-result">
-                            <h5 id="result">Silakan pilih mode absensi</h5>
-                            <p id="gestureInfo">Pilih absen masuk atau keluar terlebih dahulu</p>
-                        </div>
-                        <div class="status-band">
-                            <div><span class="status-band__label">Status Verifikasi</span><div class="status-band__value" id="modeBadge">Menunggu mode absensi</div></div>
-                            <span class="status-pill status-pill--idle" id="scanStatusPill">Idle</span>
-                        </div>
-                        <div class="status-band">
-                            <div><span class="status-band__label">Progress</span><div class="status-band__value"><span id="progressPercent">0</span>% selesai</div></div>
-                            <span class="status-pill status-pill--scan" id="gestureBadge">Mulai verifikasi</span>
+                            <div class="row align-items-center">
+                                <div class="col-lg-7 text-center text-lg-left mb-4 mb-lg-0">
+                                    <div class="verification-camera">
+                                        <video id="video" autoplay muted playsinline class="verification-video"></video>
+                                        <canvas id="overlay" class="verification-overlay"></canvas>
+                                        <div class="face-guide-wrap"><div class="face-guide-ring" id="faceGuideRing" style="--progress-angle: 0deg;"><div class="face-guide-pulse"></div></div></div>
+                                        <div class="face-guide-label" id="cameraGuideLabel">Scan Wajah</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="verification-meta">
+                                        <div class="verification-result">
+                                            <h5 id="result">Silakan pilih mode absensi</h5>
+                                            <p id="gestureInfo">Pilih absen masuk atau keluar terlebih dahulu</p>
+                                        </div>
+                                        <div class="status-band">
+                                            <div><span class="status-band__label">Status Verifikasi</span><div class="status-band__value" id="modeBadge">Menunggu mode absensi</div></div>
+                                            <span class="status-pill status-pill--idle" id="scanStatusPill">Idle</span>
+                                        </div>
+                                        <div class="status-band">
+                                            <div><span class="status-band__label">Progress</span><div class="status-band__value"><span id="progressPercent">0</span>% selesai</div></div>
+                                            <span class="status-pill status-pill--scan" id="gestureBadge">Mulai verifikasi</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -143,6 +167,7 @@
         const modeBadge = document.getElementById('modeBadge');
         const cameraGuideLabel = document.getElementById('cameraGuideLabel');
         const infoTrigger = document.getElementById('infoTrigger');
+        const attendanceCameraModal = document.getElementById('attendanceCameraModal');
         const stepCards = Array.from(document.querySelectorAll('[data-step-card]'));
         const modeButtons = [document.getElementById('btnMasuk'), document.getElementById('btnKeluar')];
 
@@ -153,7 +178,8 @@
         let isStarting = false;
         let pendingReasonPayload = {};
         let pendingAttendancePhoto = null;
-        const minimumConfidence = 60;
+        let isCameraModalVisible = false;
+        const faceMatchThreshold = 0.55;
         const jadwalMasuk = @json(optional($jadwalPegawai)->jam_masuk);
         const jadwalPulang = @json(optional($jadwalPegawai)->jam_pulang);
         const toleransiTelat = {{ (int) optional($jadwalPegawai)->toleransi_telat }};
@@ -161,6 +187,18 @@
 
         function setButtonsDisabled(disabled) { modeButtons.forEach((button) => { button.disabled = disabled; }); }
         function setStatusPill(type, text) { scanStatusPill.className = `status-pill status-pill--${type}`; scanStatusPill.innerText = text; }
+        function showAttendanceCameraModal() {
+            isCameraModalVisible = true;
+            if (window.jQuery && attendanceCameraModal) {
+                $('#attendanceCameraModal').modal({ backdrop: false, keyboard: true, show: true });
+            }
+        }
+        function hideAttendanceCameraModal() {
+            isCameraModalVisible = false;
+            if (window.jQuery && attendanceCameraModal) {
+                $('#attendanceCameraModal').modal('hide');
+            }
+        }
         function updateProgressUI() {
             const completedCount = absenDone ? 4 : Math.min(gestureStep + 1, 3);
             const progress = Math.round((completedCount / 4) * 100);
@@ -205,6 +243,7 @@
                 showErrorAlert(error.message);
                 return;
             }
+            showAttendanceCameraModal();
             resultText.innerText = `Mode ${mode === 'masuk' ? 'Absen Masuk' : 'Absen Keluar'} siap`;
             gestureText.innerText = 'Memuat kamera dan model verifikasi...';
             gestureBadge.innerText = 'Persiapan kamera';
@@ -272,6 +311,14 @@
             });
         }
 
+        if (window.jQuery && attendanceCameraModal) {
+            $('#attendanceCameraModal').on('hidden.bs.modal', () => {
+                isCameraModalVisible = false;
+                stopCamera();
+                setButtonsDisabled(false);
+            });
+        }
+
         function getFriendlyCameraError(error) {
             if (!window.isSecureContext) return 'Kamera HP butuh HTTPS atau localhost. Jika dibuka dari IP jaringan, aktifkan HTTPS.';
             if (error.name === 'NotAllowedError') return 'Izin kamera ditolak. Izinkan akses kamera di browser HP Anda.';
@@ -314,8 +361,8 @@
             const eyeCenterX = (leftEyeCenter.x + rightEyeCenter.x) / 2;
             const noseTipX = nose[3].x;
             const diff = noseTipX - eyeCenterX;
-            if (diff > 12) return 'kanan';
-            if (diff < -12) return 'kiri';
+            if (diff > 12) return 'kiri';
+            if (diff < -12) return 'kanan';
             return 'tengah';
         }
 
@@ -340,9 +387,22 @@
             cameraGuideLabel.innerText = 'Foto Siap';
         }
 
-        function getMatchConfidence(match) { return Math.max(0, Math.min(100, Math.round((1 - match.distance) * 100))); }
-        function isMatchValid(match) { return match.label !== 'unknown' && getMatchConfidence(match) >= minimumConfidence; }
-        function formatMatchLabel(match) { return match.label === 'unknown' ? 'Unknown' : `${match.label} (${getMatchConfidence(match)}%)`; }
+        function getMatchSimilarity(match) {
+            const normalizedDistance = Math.max(0, Math.min(1.5, match.distance / faceMatchThreshold));
+            const calibratedScore = 100 - (normalizedDistance * 20);
+
+            return Math.max(0, Math.min(100, Math.round(calibratedScore)));
+        }
+        function isMatchValid(match) { return match.label !== 'unknown' && match.distance <= faceMatchThreshold; }
+        function formatMatchLabel(match) { return match.label === 'unknown' ? 'Unknown' : `${match.label} (${getMatchSimilarity(match)}%)`; }
+        function mirrorBox(box, displayWidth) {
+            return {
+                x: displayWidth - box.x - box.width,
+                y: box.y,
+                width: box.width,
+                height: box.height
+            };
+        }
 
         function beginFaceDetection(faceMatcher) {
             const displaySize = { width: video.clientWidth || video.offsetWidth || 420, height: video.clientHeight || video.offsetHeight || 520 };
@@ -372,8 +432,8 @@
                 resizedDetections.forEach((detection) => {
                     const match = faceMatcher.findBestMatch(detection.descriptor);
                     const matchIsValid = isMatchValid(match);
-                    const label = matchIsValid ? formatMatchLabel(match) : `Unknown (${getMatchConfidence(match)}%)`;
-                    new faceapi.draw.DrawBox(detection.detection.box, { label }).draw(overlay);
+                    const label = matchIsValid ? formatMatchLabel(match) : `Unknown (${getMatchSimilarity(match)}%)`;
+                    new faceapi.draw.DrawBox(mirrorBox(detection.detection.box, displaySize.width), { label }).draw(overlay);
                     resultText.innerText = `Terdeteksi: ${label}`;
                     const landmarks = detection.landmarks;
 
@@ -381,8 +441,8 @@
                         gestureStep = 0;
                         pendingAttendancePhoto = null;
                         cameraGuideLabel.innerText = 'Wajah Tidak Valid';
-                        gestureBadge.innerText = 'Confidence rendah';
-                        gestureText.innerText = `Wajah tidak dikenali atau confidence di bawah ${minimumConfidence}%`;
+                        gestureBadge.innerText = 'Wajah belum cocok';
+                        gestureText.innerText = 'Wajah tidak dikenali. Dekatkan wajah, cari cahaya yang cukup, atau ulangi perekaman dataset.';
                         setStatusPill('error', 'Unknown');
                         updateProgressUI();
                         return;
@@ -488,12 +548,15 @@
                 resultText.innerText = 'Memuat model verifikasi...';
                 gestureText.innerText = 'Sistem sedang menyiapkan engine pengenalan wajah';
                 await loadModels();
+                if (!isCameraModalVisible) return;
                 resultText.innerText = 'Mengaktifkan kamera...';
                 gestureText.innerText = 'Izinkan akses kamera jika browser memintanya';
                 await startCamera();
+                if (!isCameraModalVisible) { stopCamera(); return; }
                 resultText.innerText = 'Memuat dataset wajah...';
                 gestureText.innerText = 'Menyiapkan identitas wajah yang sudah terdaftar';
                 const labeledDescriptors = await loadDataset();
+                if (!isCameraModalVisible) { stopCamera(); return; }
                 if (!labeledDescriptors.length) {
                     stopCamera();
                     resultText.innerText = 'Dataset wajah belum tersedia';
@@ -503,7 +566,7 @@
                     setStatusPill('error', 'Dataset');
                     return;
                 }
-                const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6);
+                const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, faceMatchThreshold);
                 if (video.readyState >= 2) { beginFaceDetection(faceMatcher); return; }
                 video.addEventListener('loadeddata', () => { beginFaceDetection(faceMatcher); }, { once: true });
             } catch (error) {

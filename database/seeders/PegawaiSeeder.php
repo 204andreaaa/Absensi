@@ -10,9 +10,7 @@ class PegawaiSeeder extends Seeder
 {
     public function run(): void
     {
-
-        DB::table('pegawais')->insert([
-
+        $pegawai = [
             [
                 'nik' => 'ADM001',
                 'nama' => 'Administrator',
@@ -23,10 +21,7 @@ class PegawaiSeeder extends Seeder
                 'password' => Hash::make('123456'),
                 'role' => 'admin',
                 'status' => 1,
-                'created_at' => now(),
-                'updated_at' => now()
             ],
-
             [
                 'nik' => 'PG001',
                 'nama' => 'Andrea',
@@ -37,10 +32,7 @@ class PegawaiSeeder extends Seeder
                 'password' => Hash::make('123456'),
                 'role' => 'pegawai',
                 'status' => 1,
-                'created_at' => now(),
-                'updated_at' => now()
             ],
-
             [
                 'nik' => 'PG002',
                 'nama' => 'Andi Pratama',
@@ -51,10 +43,7 @@ class PegawaiSeeder extends Seeder
                 'password' => Hash::make('123456'),
                 'role' => 'pegawai',
                 'status' => 1,
-                'created_at' => now(),
-                'updated_at' => now()
             ],
-
             [
                 'nik' => 'PG003',
                 'nama' => 'Siti Rahma',
@@ -65,11 +54,18 @@ class PegawaiSeeder extends Seeder
                 'password' => Hash::make('123456'),
                 'role' => 'pegawai',
                 'status' => 1,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]
+            ],
+        ];
 
-        ]);
-
+        foreach ($pegawai as $data) {
+            DB::table('pegawais')->updateOrInsert(
+                ['nik' => $data['nik']],
+                [
+                    ...$data,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+        }
     }
 }

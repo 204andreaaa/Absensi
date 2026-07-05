@@ -122,16 +122,7 @@ class="rounded-circle mr-1">
 <li class="{{ request()->is('admin/jadwal*') ? 'active' : '' }}">
   <a class="nav-link" href="{{ route('admin.jadwal.index') }}">
     <i class="fas fa-clock"></i>
-    <span>Jadwal Kerja</span>
-  </a>
-</li>
-
-<li class="{{ request()->is('admin/hari-libur*') ? 'active' : '' }}">
-  <a class="nav-link" href="{{ route('admin.hari-libur.index') }}">
-    <i class="fas fa-calendar-times"></i>
-    <span>Hari Libur</span>
-  </a>
-</li>
+    <span>Jadwal Ke–/li>
 
 <li class="{{ request()->is('admin/pegawai*') ? 'active' : '' }}">
   <a class="nav-link" href="{{ route('admin.pegawai.index') }}">
