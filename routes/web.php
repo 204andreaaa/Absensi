@@ -36,14 +36,14 @@ Route::post('/logout',[AuthController::class,'logout'])->name('logout');
 |--------------------------------------------------------------------------
 */
 
+use App\Http\Controllers\Admin\DashboardController;
+
 Route::prefix('admin')
 ->middleware(['auth','role:admin'])
 ->name('admin.')
 ->group(function(){
 
-    Route::get('/dashboard', function () {
-        return view('admin.index');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 
     /* DEPARTEMEN */
@@ -89,20 +89,28 @@ Route::prefix('admin')
 
     Route::get('absensi',[AbsensiController::class,'index'])->name('absensi.index');
     Route::post('absensi/store',[AbsensiController::class,'store'])->name('absensi.store');
+    Route::post('absensi/reset-hari-ini',[AbsensiController::class,'resetHariIni'])->name('absensi.reset-hari-ini');
+    Route::get('absensi/camera-testing',[AbsensiController::class,'cameraTesting'])->name('absensi.camera-testing');
+    Route::get('absensi/liveness-testing',[AbsensiController::class,'livenessTesting'])->name('absensi.liveness-testing');
 
 
     /* LAPORAN */
 
     Route::get('laporan', [AbsensiController::class,'laporan'])->name('laporan.index');
     Route::get('laporan/export-excel', [AbsensiController::class,'exportExcel'])->name('laporan.export-excel');
+    Route::get('laporan/export-pdf', [AbsensiController::class,'exportPdf'])->name('laporan.export-pdf');
     Route::get('laporan/tepat-waktu', [AbsensiController::class,'laporanTepatWaktu'])->name('laporan.tepat-waktu');
     Route::get('laporan/tepat-waktu/export-excel', [AbsensiController::class,'exportExcelTepatWaktu'])->name('laporan.tepat-waktu.export-excel');
+    Route::get('laporan/tepat-waktu/export-pdf', [AbsensiController::class,'exportPdfTepatWaktu'])->name('laporan.tepat-waktu.export-pdf');
     Route::get('laporan/terlambat', [AbsensiController::class,'laporanTerlambat'])->name('laporan.terlambat');
     Route::get('laporan/terlambat/export-excel', [AbsensiController::class,'exportExcelTerlambat'])->name('laporan.terlambat.export-excel');
+    Route::get('laporan/terlambat/export-pdf', [AbsensiController::class,'exportPdfTerlambat'])->name('laporan.terlambat.export-pdf');
     Route::get('laporan/pulang-cepat', [AbsensiController::class,'laporanPulangCepat'])->name('laporan.pulang-cepat');
     Route::get('laporan/pulang-cepat/export-excel', [AbsensiController::class,'exportExcelPulangCepat'])->name('laporan.pulang-cepat.export-excel');
+    Route::get('laporan/pulang-cepat/export-pdf', [AbsensiController::class,'exportPdfPulangCepat'])->name('laporan.pulang-cepat.export-pdf');
     Route::get('laporan/rekap-bulanan', [AbsensiController::class,'laporanRekapBulanan'])->name('laporan.rekap-bulanan');
     Route::get('laporan/rekap-bulanan/export-excel', [AbsensiController::class,'exportExcelRekapBulanan'])->name('laporan.rekap-bulanan.export-excel');
+    Route::get('laporan/rekap-bulanan/export-pdf', [AbsensiController::class,'exportPdfRekapBulanan'])->name('laporan.rekap-bulanan.export-pdf');
 
 });
 
@@ -127,6 +135,10 @@ Route::prefix('pegawai')
         Route::get('/absensi',[AbsensiPegawaiController::class,'index'])->name('absensi');
         Route::post('/absensi/store',[AbsensiPegawaiController::class,'store'])->name('absensi.store');
         Route::get('/riwayat-absensi',[AbsensiPegawaiController::class,'riwayat'])->name('riwayat');
+        
+        Route::get('/profile', [\App\Http\Controllers\Pegawai\ProfileController::class, 'index'])->name('profile');
+        Route::post('/profile/update-password', [\App\Http\Controllers\Pegawai\ProfileController::class, 'updatePassword'])->name('profile.update-password');
+        Route::post('/profile/update-foto', [\App\Http\Controllers\Pegawai\ProfileController::class, 'updateFoto'])->name('profile.update-foto');
     });
 
 });

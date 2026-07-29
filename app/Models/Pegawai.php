@@ -16,6 +16,7 @@ class Pegawai extends Authenticatable
 
         'nik',
         'nama',
+        'foto',
         'departemen_id',
         'jadwal_kerja_id',
         'jabatan',

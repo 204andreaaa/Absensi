@@ -9,11 +9,16 @@
         <div class="card-header">
             <h4 class="mb-0">{{ $cardTitle }}</h4>
             <div class="card-header-action">
-                <a href="{{ route($exportRoute) }}" class="btn btn-success">
-                    Export Excel
+                <a href="{{ route($exportRoute, request()->query()) }}" class="btn btn-success">
+                    <i class="fas fa-file-excel mr-1"></i> Export Excel
+                </a>
+                <a href="{{ route($exportPdfRoute, request()->query()) }}" target="_blank" class="btn btn-danger ml-2">
+                    <i class="fas fa-file-pdf mr-1"></i> Print PDF
                 </a>
             </div>
         </div>
+
+        @include('admin.laporan.partials.filter_monthly_form')
 
         <div class="card-body p-0">
             <div class="table-responsive">

@@ -25,8 +25,13 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-8">
                         <div class="mb-4 p-3 rounded text-left" style="background: #eef6ff; border: 1px solid #d6e7ff;">
-                            <div class="text-muted small text-uppercase font-weight-bold mb-2">
-                                Arahan Pengambilan
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="text-muted small text-uppercase font-weight-bold">
+                                    Arahan Pengambilan
+                                </div>
+                                <button type="button" id="toggleSoundBtn" onclick="toggleSound()" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.8rem;">
+                                    <i id="soundIcon" class="fas fa-volume-up mr-1"></i><span id="soundLabel">Suara: ON</span>
+                                </button>
                             </div>
                             <h5 id="instructionTitle" class="font-weight-bold mb-2">
                                 Dekatkan wajah ke kamera
@@ -122,6 +127,50 @@
                 { pose: 'kanan', title: 'Terakhir pose kanan', text: 'Setelah tersimpan, dataset akan selesai otomatis.' }
             ];
 
+            let isSoundEnabled = true;
+            let lastSpokenText = '';
+            let lastSpokenTime = 0;
+
+            function toggleSound() {
+                isSoundEnabled = !isSoundEnabled;
+                const soundIcon = document.getElementById('soundIcon');
+                const soundLabel = document.getElementById('soundLabel');
+                if (isSoundEnabled) {
+                    if (soundIcon) soundIcon.className = 'fas fa-volume-up mr-1';
+                    if (soundLabel) soundLabel.innerText = 'Suara: ON';
+                    speakInstruction('Suara instruksi diaktifkan', true);
+                } else {
+                    if (soundIcon) soundIcon.className = 'fas fa-volume-mute mr-1';
+                    if (soundLabel) soundLabel.innerText = 'Suara: OFF';
+                    if ('speechSynthesis' in window) {
+                        window.speechSynthesis.cancel();
+                    }
+                }
+            }
+
+            function speakInstruction(text, force = false) {
+                if (!isSoundEnabled || !('speechSynthesis' in window)) return;
+
+                const now = Date.now();
+                if (!force && text === lastSpokenText && (now - lastSpokenTime < 3500)) {
+                    return;
+                }
+
+                lastSpokenText = text;
+                lastSpokenTime = now;
+
+                try {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'id-ID';
+                    utterance.rate = 1.0;
+                    utterance.pitch = 1.0;
+                    window.speechSynthesis.speak(utterance);
+                } catch (e) {
+                    console.error('SpeechSynthesis error:', e);
+                }
+            }
+
             function getCenterPoint(points) {
                 const total = points.reduce((accumulator, point) => {
                     accumulator.x += point.x;
@@ -155,6 +204,7 @@
 
                 instructionTitle.innerText = currentStep.title;
                 instructionText.innerText = currentStep.text;
+                speakInstruction(currentStep.title);
             }
 
             function getFaceSizeLimits(displaySize) {
@@ -266,6 +316,7 @@
                 captureInterval = setInterval(async () => {
                     if (datasetCount >= maxDataset) {
                         stopCamera();
+                        speakInstruction('Dataset wajah berhasil direkam', true);
 
                         Swal.fire({
                             icon: 'success',
@@ -303,37 +354,46 @@
                         if (!isFaceCloseEnough(faceBox, displaySize)) {
                             instructionTitle.innerText = 'Dekatkan wajah ke kamera';
                             instructionText.innerText = 'Wajah masih terlalu jauh. Dekatkan sedikit lalu tahan posisi.';
+                            speakInstruction('Dekatkan wajah ke kamera');
                             return;
                         }
 
                         if (isFaceTooClose(faceBox, displaySize)) {
                             instructionTitle.innerText = 'Mundur sedikit';
                             instructionText.innerText = 'Wajah terlalu dekat. Beri jarak sedikit agar seluruh wajah terbaca jelas.';
+                            speakInstruction('Mundur sedikit');
                             return;
                         }
 
                         if (!isFaceCentered(faceBox, displaySize)) {
                             instructionTitle.innerText = 'Tengah dulu';
                             instructionText.innerText = 'Posisikan wajah di tengah frame sebelum dataset disimpan.';
+                            speakInstruction('Posisikan wajah di tengah');
                             return;
                         }
 
                         if (detectionScore < minimumDetectionScore) {
                             instructionTitle.innerText = 'Perjelas wajah';
                             instructionText.innerText = 'Deteksi wajah belum cukup yakin. Cari cahaya lebih terang dan tahan posisi.';
+                            speakInstruction('Perjelas cahaya pada wajah');
                             return;
                         }
 
                         if (headDirection !== currentStep.pose) {
+                            let textToSpeak = 'Lihat lurus ke depan';
                             if (currentStep.pose === 'depan') {
                                 instructionTitle.innerText = 'Lihat lurus ke depan';
+                                textToSpeak = 'Lihat lurus ke depan';
                             } else if (currentStep.pose === 'kiri') {
                                 instructionTitle.innerText = 'Arahkan wajah ke kiri';
+                                textToSpeak = 'Arahkan wajah ke kiri';
                             } else {
                                 instructionTitle.innerText = 'Arahkan wajah ke kanan';
+                                textToSpeak = 'Arahkan wajah ke kanan';
                             }
 
                             instructionText.innerText = currentStep.text;
+                            speakInstruction(textToSpeak);
                             return;
                         }
 
@@ -344,6 +404,7 @@
                         if (isDescriptorTooSimilar(descriptor)) {
                             instructionTitle.innerText = 'Variasi kurang';
                             instructionText.innerText = 'Pose terlalu mirip dengan data sebelumnya. Ubah sedikit sudut wajah lalu tahan.';
+                            speakInstruction('Ubah sedikit posisi wajah');
                             setTimeout(() => {
                                 isSaving = false;
                             }, 900);

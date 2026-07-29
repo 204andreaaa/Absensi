@@ -335,7 +335,7 @@
             bottom: 14px;
             z-index: 20;
             display: none;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 8px;
             padding: 10px;
             border-radius: 24px;
@@ -501,6 +501,13 @@
                             <span>Riwayat Absensi</span>
                         </a>
                     </li>
+                    
+                    <li class="{{ request()->routeIs('pegawai.profile') ? 'active' : '' }}">
+                        <a href="{{ route('pegawai.profile') }}">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Profil</span>
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="pegawai-logout">
@@ -559,6 +566,11 @@
             <a href="{{ route('pegawai.riwayat') }}" class="{{ request()->routeIs('pegawai.riwayat') ? 'active' : '' }}">
                 <i class="fas fa-history"></i>
                 <span>Riwayat</span>
+            </a>
+
+            <a href="{{ route('pegawai.profile') }}" class="{{ request()->routeIs('pegawai.profile') ? 'active' : '' }}">
+                <i class="fas fa-user-circle"></i>
+                <span>Profil</span>
             </a>
         </nav>
     </div>

@@ -70,9 +70,27 @@ class AbsensiController extends Controller
 
     private function baseAttendanceQuery()
     {
-        return Absensi::with('pegawai.jadwal')
+        $query = Absensi::with('pegawai.jadwal')
             ->orderByDesc('tanggal')
             ->orderByDesc('created_at');
+
+        if (request('start_date')) {
+            $query->whereDate('tanggal', '>=', request('start_date'));
+        }
+        if (request('end_date')) {
+            $query->whereDate('tanggal', '<=', request('end_date'));
+        }
+        if (request('bulan')) {
+            $query->whereMonth('tanggal', request('bulan'));
+        }
+        if (request('tahun')) {
+            $query->whereYear('tanggal', request('tahun'));
+        }
+        if (request('pegawai_id')) {
+            $query->where('pegawai_id', request('pegawai_id'));
+        }
+
+        return $query;
     }
 
     private function enrichAttendanceRecord(Absensi $item): Absensi
@@ -196,12 +214,15 @@ class AbsensiController extends Controller
         ?callable $filter = null
     ) {
         $laporanAbsensi = $this->paginateCollection($this->attendanceCollection($filter));
+        $listPegawai = Pegawai::orderBy('nama')->get();
 
         return view($view, [
             'pageTitle' => $title,
             'cardTitle' => $heading,
             'exportRoute' => $exportRoute,
+            'exportPdfRoute' => str_replace('export-excel', 'export-pdf', $exportRoute),
             'laporanAbsensi' => $laporanAbsensi,
+            'listPegawai' => $listPegawai,
         ]);
     }
 
@@ -225,27 +246,61 @@ class AbsensiController extends Controller
         );
     }
 
+    public function exportPdf()
+    {
+        $laporanAbsensi = $this->attendanceCollection();
+
+        return view('admin.laporan.export_pdf', [
+            'reportTitle' => 'Laporan Kehadiran',
+            'laporanAbsensi' => $laporanAbsensi
+        ]);
+    }
+
     public function laporanTepatWaktu()
     {
-        return $this->attendanceReportResponse(
-            'admin.laporan.tepat_waktu',
-            'Laporan Tepat Waktu',
-            'Daftar Absensi Tepat Waktu',
-            'admin.laporan.tepat-waktu.export-excel',
-            fn (Absensi $item) => $item->status !== 'terlambat'
-        );
+        $query = Pegawai::with(['departemen', 'jadwal']);
+        if (request('departemen_id')) {
+            $query->where('departemen_id', request('departemen_id'));
+        }
+        $pegawai = $query->paginate(self::REPORT_PER_PAGE);
+        $listDepartemen = \App\Models\Departemen::orderBy('nama_departemen')->get();
+
+        return view('admin.laporan.pegawai', [
+            'pageTitle' => 'Laporan Pegawai',
+            'cardTitle' => 'Data Laporan Pegawai',
+            'pegawai' => $pegawai,
+            'listDepartemen' => $listDepartemen,
+            'exportRoute' => 'admin.laporan.tepat-waktu.export-excel',
+            'exportPdfRoute' => 'admin.laporan.tepat-waktu.export-pdf',
+        ]);
     }
 
     public function exportExcelTepatWaktu()
     {
-        $laporanAbsensi = $this->attendanceCollection(
-            fn (Absensi $item) => $item->status !== 'terlambat'
-        );
+        $query = Pegawai::with(['departemen', 'jadwal']);
+        if (request('departemen_id')) {
+            $query->where('departemen_id', request('departemen_id'));
+        }
+        $pegawai = $query->get();
 
         return Excel::download(
-            new AttendanceReportExport($laporanAbsensi, 'Laporan Tepat Waktu'),
-            'laporan-tepat-waktu-' . now()->format('Ymd-His') . '.xlsx'
+            new \App\Exports\PegawaiReportExport($pegawai),
+            'laporan-pegawai-' . now()->format('Ymd-His') . '.xlsx'
         );
+    }
+
+    public function exportPdfTepatWaktu()
+    {
+        $query = Pegawai::with(['departemen', 'jadwal']);
+        if (request('departemen_id')) {
+            $query->where('departemen_id', request('departemen_id'));
+        }
+        $pegawai = $query->get();
+
+        return view('admin.laporan.export_pegawai_pdf', [
+            'reportTitle' => 'Laporan Pegawai',
+            'pegawai' => $pegawai
+        ]);
     }
 
     public function laporanTerlambat()
@@ -276,6 +331,18 @@ class AbsensiController extends Controller
         );
     }
 
+    public function exportPdfTerlambat()
+    {
+        $laporanAbsensi = $this->attendanceCollection(
+            fn (Absensi $item) => $item->status === 'terlambat'
+        );
+
+        return view('admin.laporan.export_pdf', [
+            'reportTitle' => 'Laporan Keterlambatan',
+            'laporanAbsensi' => $laporanAbsensi
+        ]);
+    }
+
     public function laporanPulangCepat()
     {
         return $this->attendanceReportResponse(
@@ -304,15 +371,30 @@ class AbsensiController extends Controller
         );
     }
 
+    public function exportPdfPulangCepat()
+    {
+        $laporanAbsensi = $this->attendanceCollection(
+            fn (Absensi $item) => $item->status_pulang_label === 'Pulang Cepat'
+        );
+
+        return view('admin.laporan.export_pdf', [
+            'reportTitle' => 'Laporan Pulang Cepat',
+            'laporanAbsensi' => $laporanAbsensi
+        ]);
+    }
+
     public function laporanRekapBulanan()
     {
         $rekapBulanan = $this->paginateCollection($this->monthlySummaryCollection());
+        $listPegawai = Pegawai::orderBy('nama')->get();
 
         return view('admin.laporan.rekap_bulanan', [
             'pageTitle' => 'Laporan Rekap Bulanan',
             'cardTitle' => 'Rekap Absensi Bulanan',
             'exportRoute' => 'admin.laporan.rekap-bulanan.export-excel',
+            'exportPdfRoute' => 'admin.laporan.rekap-bulanan.export-pdf',
             'rekapBulanan' => $rekapBulanan,
+            'listPegawai' => $listPegawai,
         ]);
     }
 
@@ -322,6 +404,14 @@ class AbsensiController extends Controller
             new MonthlyAttendanceSummaryExport($this->monthlySummaryCollection(), 'Laporan Rekap Bulanan'),
             'laporan-rekap-bulanan-' . now()->format('Ymd-His') . '.xlsx'
         );
+    }
+
+    public function exportPdfRekapBulanan()
+    {
+        return view('admin.laporan.export_pdf_rekap_bulanan', [
+            'reportTitle' => 'Laporan Rekap Bulanan',
+            'rekapBulanan' => $this->monthlySummaryCollection()
+        ]);
     }
 
     public function store(Request $request)
@@ -443,6 +533,27 @@ class AbsensiController extends Controller
         'message'=>'Mode absensi tidak valid'
         ],422);
 
+    }
+
+    public function resetHariIni()
+    {
+        $todayString = Carbon::today()->toDateString();
+        Absensi::whereDate('tanggal', $todayString)->delete();
+        
+        return response()->json([
+            'status' => true,
+            'message' => 'Seluruh absensi hari ini berhasil dihapus (Mode Testing)'
+        ]);
+    }
+
+    public function cameraTesting()
+    {
+        return view('admin.absensi.camera_testing');
+    }
+
+    public function livenessTesting()
+    {
+        return view('admin.absensi.liveness_testing');
     }
 
 }

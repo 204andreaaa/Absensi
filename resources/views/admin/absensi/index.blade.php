@@ -20,8 +20,12 @@
 Absen Masuk
 </button>
 
-<button class="btn btn-danger" onclick="pilihMode('keluar')">
+<button class="btn btn-danger mr-2" onclick="pilihMode('keluar')">
 Absen Keluar
+</button>
+
+<button class="btn btn-warning" onclick="resetAbsensiHariIni()">
+Reset Absensi Hari Ini (Testing)
 </button>
 
 </div>
@@ -100,7 +104,7 @@ let detectionInterval = null
 let absenDone = false
 let gestureStep = 0
 let absensiMode = null
-const faceMatchThreshold = 0.55
+const faceMatchThreshold = 0.80
 
 const gestures = [
 'Hadap Kiri',
@@ -479,6 +483,40 @@ resultText.innerText = "Terjadi kesalahan saat menyimpan absensi"
 
 }
 
+}
+
+async function resetAbsensiHariIni(){
+    if(!confirm("Yakin ingin menghapus seluruh data absensi hari ini untuk uji coba?")){
+        return;
+    }
+
+    try{
+        const response = await fetch("{{ route('admin.absensi.reset-hari-ini') }}",{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content
+            }
+        });
+        
+        const result = await response.json();
+        
+        if(result.status){
+            Swal.fire({
+                icon:'success',
+                title:'Berhasil',
+                text:result.message,
+                confirmButtonText:'OK'
+            }).then(() => {
+                location.reload();
+            });
+        }else{
+            Swal.fire('Error', 'Gagal reset absensi', 'error');
+        }
+    }catch(error){
+        console.error(error);
+        Swal.fire('Error', 'Terjadi kesalahan saat mereset absensi', 'error');
+    }
 }
 
 async function start(){

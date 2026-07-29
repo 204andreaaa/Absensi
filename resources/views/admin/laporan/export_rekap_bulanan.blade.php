@@ -1,6 +1,24 @@
 <table>
     <tr>
-        <td colspan="10">{{ $reportTitle }}</td>
+        <th colspan="10" style="font-size: 16px; font-weight: bold; text-align: center;">PT. MANDIRI DAYA UTAMA NUSANTARA</th>
+    </tr>
+    <tr>
+        <th colspan="10" style="text-align: center;">Golden Fatmawati, Jl. RS. Fatmawati Raya No.17 C17, RT.10/RW.6, Gandaria Sel.,</th>
+    </tr>
+    <tr>
+        <th colspan="10" style="text-align: center;">Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12420</th>
+    </tr>
+    <tr>
+        <th colspan="10" style="text-align: center;">Telepon: (021) 7697070</th>
+    </tr>
+    <tr>
+        <th colspan="10"></th>
+    </tr>
+    <tr>
+        <th colspan="10" style="font-size: 14px; font-weight: bold; text-align: center;">{{ $reportTitle ?? 'Laporan Rekap Bulanan' }}</th>
+    </tr>
+    <tr>
+        <th colspan="10"></th>
     </tr>
 </table>
 

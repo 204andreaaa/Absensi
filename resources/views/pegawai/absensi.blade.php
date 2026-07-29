@@ -2,20 +2,20 @@
 
 @push('styles')
     <style>
-        .attendance-shell { display: grid; gap: 18px; }
-        .attendance-hero { position: relative; overflow: hidden; border-radius: 8px; background: #101827; color: #f8fafc; box-shadow: 0 22px 52px rgba(15, 23, 42, 0.18); }
-        .attendance-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(115deg, rgba(14, 165, 233, 0.28), transparent 36%), linear-gradient(150deg, transparent 45%, rgba(20, 184, 166, 0.24)); pointer-events: none; }
-        .attendance-hero__content { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px; }
-        .attendance-hero__copy { display: grid; gap: 8px; }
-        .attendance-label { display: inline-flex; align-items: center; width: max-content; padding: 6px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.12); color: #bae6fd; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-        .attendance-title { margin: 0; font-size: clamp(1.35rem, 2.4vw, 2rem); font-weight: 850; line-height: 1.08; color: #fff; }
-        .attendance-subtitle { margin: 0; max-width: 720px; color: #cbd5e1; font-size: 0.96rem; line-height: 1.62; }
-        .attendance-actions { display: grid; grid-template-columns: repeat(2, minmax(140px, 1fr)); gap: 10px; min-width: min(100%, 340px); padding: 6px; border-radius: 8px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.14); }
-        .mode-button { border: 0; border-radius: 6px; padding: 13px 16px; font-weight: 850; font-size: 0.95rem; letter-spacing: 0.01em; transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, filter 0.18s ease; }
-        .mode-button:hover { transform: translateY(-1px); filter: brightness(1.03); }
-        .mode-button:disabled { opacity: 0.72; cursor: not-allowed; transform: none; filter: none; }
-        .mode-button--masuk { background: #17b26a; box-shadow: 0 14px 28px rgba(23, 178, 106, 0.24); color: #fff; }
-        .mode-button--keluar { background: #f04438; box-shadow: 0 14px 28px rgba(240, 68, 56, 0.24); color: #fff; }
+        .attendance-shell { display: grid; gap: 24px; }
+        .attendance-hero { position: relative; overflow: hidden; border-radius: 24px; background: linear-gradient(135deg, var(--pegawai-primary-dark), var(--pegawai-primary), var(--pegawai-accent)); color: #f8fafc; box-shadow: 0 24px 50px rgba(29, 78, 216, 0.25); }
+        .attendance-hero::before { content: ''; position: absolute; inset: -50%; background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(20, 184, 166, 0.3) 0%, transparent 40%); pointer-events: none; animation: glow-move 10s ease-in-out infinite alternate; }
+        .attendance-hero__content { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 30px; padding: 32px 40px; z-index: 2; }
+        .attendance-hero__copy { display: grid; gap: 12px; }
+        .attendance-label { display: inline-flex; align-items: center; width: max-content; padding: 8px 14px; border-radius: 999px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .attendance-title { margin: 0; font-size: clamp(1.4rem, 2.5vw, 1.85rem); font-weight: 850; line-height: 1.2; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+        .attendance-subtitle { margin: 0; max-width: 720px; color: rgba(255, 255, 255, 0.85); font-size: 1.05rem; line-height: 1.7; }
+        .attendance-actions { display: grid; grid-template-columns: repeat(2, minmax(150px, 1fr)); gap: 16px; min-width: min(100%, 380px); padding: 12px; border-radius: 16px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+        .mode-button { border: 0; border-radius: 10px; padding: 16px 20px; font-weight: 850; font-size: 1rem; letter-spacing: 0.02em; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .mode-button:hover { transform: translateY(-3px) scale(1.02); filter: brightness(1.1); box-shadow: 0 12px 24px rgba(0,0,0,0.2); }
+        .mode-button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; filter: none; box-shadow: none; }
+        .mode-button--masuk { background: #fff; color: var(--pegawai-primary-dark); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .mode-button--keluar { background: rgba(255, 255, 255, 0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); backdrop-filter: blur(10px); }
         .verification-panel { position: relative; display: grid; gap: 18px; padding: 18px; border-radius: 8px; background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(203, 213, 225, 0.86); box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14); overflow: hidden; }
         .verification-panel::before { content: ''; position: absolute; left: 0; top: 0; right: 0; height: 4px; background: linear-gradient(90deg, #0ea5e9, #14b8a6, #22c55e); }
         .verification-panel__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
@@ -31,16 +31,14 @@
         .attendance-modal .modal-content { border: 0; border-radius: 8px; background: transparent; box-shadow: none; }
         .attendance-modal .modal-body { padding: 0; }
         .verification-camera { position: relative; aspect-ratio: 4 / 5; max-width: 420px; width: 100%; margin: 0 auto; border-radius: 8px; overflow: hidden; background: #020617; box-shadow: 0 24px 48px rgba(15, 23, 42, 0.28); }
-        .verification-camera::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15, 23, 42, 0.02) 0%, rgba(15, 23, 42, 0.32) 100%); pointer-events: none; z-index: 1; }
         .verification-camera::after { content: ''; position: absolute; inset: 12px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.12); pointer-events: none; z-index: 2; }
         .verification-video, .verification-overlay { position: absolute; inset: 0; width: 100%; height: 100%; }
         .verification-video { object-fit: cover; display: block; transform: scaleX(-1); }
         .verification-overlay { pointer-events: none; z-index: 3; }
         .face-guide-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 2; pointer-events: none; }
-        .face-guide-ring { position: relative; width: min(72%, 286px); aspect-ratio: 0.82; border-radius: 46%; box-shadow: 0 0 0 999px rgba(2, 6, 23, 0.30), inset 0 0 0 1px rgba(255, 255, 255, 0.24); overflow: hidden; }
-        .face-guide-ring::before { content: ''; position: absolute; inset: -14px; border-radius: 48%; background: conic-gradient(from -90deg, #38bdf8 0deg, #14b8a6 var(--progress-angle, 0deg), rgba(255,255,255,0.16) var(--progress-angle, 0deg), rgba(255,255,255,0.08) 360deg); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px)); mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px)); }
-        .face-guide-ring::after { content: ''; position: absolute; inset: 18px; border-radius: 44%; border: 1px dashed rgba(255, 255, 255, 0.42); }
-        .face-guide-pulse { position: absolute; inset: 10px; border-radius: 46%; border: 1px solid rgba(56, 189, 248, 0.58); animation: pulse-ring 2.2s ease-in-out infinite; opacity: 0.9; }
+        .face-guide-ring { position: relative; width: min(65%, 260px); aspect-ratio: 0.85; box-shadow: none; overflow: hidden; background: linear-gradient(to right, var(--pegawai-accent) 4px, transparent 4px) 0 0, linear-gradient(to bottom, var(--pegawai-accent) 4px, transparent 4px) 0 0, linear-gradient(to left, var(--pegawai-accent) 4px, transparent 4px) 100% 0, linear-gradient(to bottom, var(--pegawai-accent) 4px, transparent 4px) 100% 0, linear-gradient(to right, var(--pegawai-accent) 4px, transparent 4px) 0 100%, linear-gradient(to top, var(--pegawai-accent) 4px, transparent 4px) 0 100%, linear-gradient(to left, var(--pegawai-accent) 4px, transparent 4px) 100% 100%, linear-gradient(to top, var(--pegawai-accent) 4px, transparent 4px) 100% 100%; background-repeat: no-repeat; background-size: 35px 35px; }
+        .face-guide-pulse { position: absolute; left: 8px; right: 8px; height: 3px; background: var(--pegawai-accent); box-shadow: 0 0 12px 2px var(--pegawai-accent), 0 0 4px #fff; border-radius: 4px; animation: scan-line 2.5s ease-in-out infinite alternate; opacity: 0.8; }
+        @keyframes scan-line { 0% { top: 12px; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: calc(100% - 15px); opacity: 0; } }
         .face-guide-label { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 4; padding: 9px 15px; border-radius: 6px; background: rgba(15, 23, 42, 0.72); color: #f8fafc; box-shadow: 0 10px 24px rgba(2, 6, 23, 0.22); font-size: 0.76rem; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; }
         .verification-meta { display: grid; gap: 14px; }
         .verification-result { padding: 18px; text-align: left; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; }
@@ -63,9 +61,25 @@
         .step-card.is-complete .step-card__number { background: #16a34a; color: #fff; }
         .step-card__title { margin-top: 12px; margin-bottom: 4px; font-size: 0.9rem; font-weight: 850; color: #0f172a; }
         .step-card__caption { color: #64748b; font-size: 0.78rem; line-height: 1.45; }
+        
+        .tutorial-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 24px; margin-bottom: 24px; }
+        .tutorial-step { background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04); transition: transform 0.25s ease, box-shadow 0.25s ease; }
+        .tutorial-step:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08); border-color: rgba(14, 165, 233, 0.3); }
+        .tutorial-img-wrap { padding: 24px 24px 0 24px; background: linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%); display: flex; justify-content: center; }
+        .tutorial-img { width: 100%; max-width: 170px; aspect-ratio: 4 / 4.1; object-fit: cover; object-position: top; border-radius: 12px 12px 0 0; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.05)); }
+        .tutorial-content { padding: 20px; text-align: center; }
+        .tutorial-badge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--pegawai-primary); color: #fff; font-size: 0.8rem; font-weight: 850; margin-right: 8px; }
+        .tutorial-step-title { display: flex; align-items: center; justify-content: center; font-size: 1.05rem; font-weight: 800; color: #0f172a; margin-bottom: 8px; letter-spacing: -0.01em; }
+        .tutorial-step-desc { font-size: 0.85rem; color: #64748b; line-height: 1.5; margin: 0; }
+        
+        .tutorial-info-box { background: linear-gradient(135deg, var(--pegawai-primary-dark), var(--pegawai-primary), var(--pegawai-accent)); border-radius: 16px; padding: 20px 24px; color: #fff; display: flex; align-items: center; justify-content: center; gap: 18px; margin: 0 auto 32px auto; max-width: 640px; box-shadow: 0 16px 32px rgba(20, 184, 166, 0.25); }
+        .tutorial-info-icon { font-size: 1.75rem; opacity: 0.9; }
+        .tutorial-info-text { font-size: 0.95rem; line-height: 1.6; font-weight: 500; text-align: left; margin: 0; }
+
         @keyframes pulse-ring { 0%,100% { transform: scale(0.985); opacity: 0.8; } 50% { transform: scale(1.02); opacity: 1; } }
-        @media (max-width: 991.98px) { .step-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .attendance-hero__content { flex-direction: column; align-items: stretch; } }
-        @media (max-width: 575.98px) { .attendance-hero__content, .verification-panel { padding: 14px; } .attendance-actions { grid-template-columns: 1fr; } .step-grid { grid-template-columns: 1fr; } .status-band { align-items: flex-start; flex-direction: column; } .attendance-modal .modal-dialog { max-width: calc(100vw - 16px); margin: 8px auto; } }
+        @keyframes glow-move { 0% { transform: translate(-2%, -2%); } 100% { transform: translate(2%, 2%); } }
+        @media (max-width: 991.98px) { .step-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .attendance-hero__content { flex-direction: column; align-items: stretch; } .tutorial-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+        @media (max-width: 575.98px) { .attendance-hero__content, .verification-panel { padding: 14px; } .attendance-actions { grid-template-columns: 1fr; } .step-grid { grid-template-columns: 1fr; } .status-band { align-items: flex-start; flex-direction: column; } .attendance-modal .modal-dialog { max-width: calc(100vw - 16px); margin: 8px auto; } .tutorial-grid { grid-template-columns: 1fr; } .tutorial-info-box { flex-direction: column; text-align: center; gap: 12px; } .tutorial-info-text { text-align: center; } }
     </style>
 @endpush
 
@@ -75,6 +89,12 @@
     </div>
 
     <div class="attendance-shell">
+        @if(isset($holidayMessage) && $holidayMessage)
+            <div class="alert alert-warning mb-0" style="border-radius: 8px;">
+                <strong>Hari Libur!</strong> {{ $holidayMessage }}. Absensi hari ini ditutup.
+            </div>
+        @endif
+
         @if($datasetCount < $minDataset)
             <div class="alert alert-warning mb-0">
                 Dataset wajah Anda belum lengkap. Silakan daftar dan lengkapi dataset terlebih dahulu sebelum melakukan absensi.
@@ -89,10 +109,54 @@
                     <p class="attendance-subtitle">Posisikan wajah di dalam frame, ikuti instruksi gesture, lalu sistem akan menyimpan bukti absensi secara otomatis setelah proses verifikasi selesai.</p>
                 </div>
                 <div class="attendance-actions">
-                    <button id="btnMasuk" type="button" class="mode-button mode-button--masuk" onclick="pilihMode('masuk')">Absen Masuk</button>
-                    <button id="btnKeluar" type="button" class="mode-button mode-button--keluar" onclick="pilihMode('keluar')">Absen Keluar</button>
+                    <button id="btnMasuk" type="button" class="mode-button mode-button--masuk" onclick="pilihMode('masuk')" {{ (isset($holidayMessage) && $holidayMessage) ? 'disabled' : '' }}>Absen Masuk</button>
+                    <button id="btnKeluar" type="button" class="mode-button mode-button--keluar" onclick="pilihMode('keluar')" {{ (isset($holidayMessage) && $holidayMessage) ? 'disabled' : '' }}>Absen Keluar</button>
                 </div>
             </div>
+        </div>
+
+        <div class="tutorial-grid">
+            <div class="tutorial-step">
+                <div class="tutorial-img-wrap">
+                    <img src="{{ asset('images/steps/step1.png') }}" alt="Hadap Depan" class="tutorial-img">
+                </div>
+                <div class="tutorial-content">
+                    <div class="tutorial-step-title"><span class="tutorial-badge">1</span> Hadap Depan</div>
+                    <p class="tutorial-step-desc">Posisikan wajah pas di dalam frame kamera</p>
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div class="tutorial-img-wrap">
+                    <img src="{{ asset('images/steps/step2.png') }}" alt="Hadap Kiri" class="tutorial-img">
+                </div>
+                <div class="tutorial-content">
+                    <div class="tutorial-step-title"><span class="tutorial-badge">2</span> Hadap Kiri</div>
+                    <p class="tutorial-step-desc">Putar wajah perlahan ke arah kiri</p>
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div class="tutorial-img-wrap">
+                    <img src="{{ asset('images/steps/step3.png') }}" alt="Hadap Kanan" class="tutorial-img">
+                </div>
+                <div class="tutorial-content">
+                    <div class="tutorial-step-title"><span class="tutorial-badge">3</span> Hadap Kanan</div>
+                    <p class="tutorial-step-desc">Putar wajah perlahan ke arah kanan</p>
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div class="tutorial-img-wrap">
+                    <img src="{{ asset('images/steps/step4.png') }}" alt="Buka Mulut" class="tutorial-img">
+                </div>
+                <div class="tutorial-content">
+                    <div class="tutorial-step-title"><span class="tutorial-badge">4</span> Buka Mulut</div>
+                    <p class="tutorial-step-desc">Buka mulut seperti mengucapkan "ah"</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tutorial-info-box">
+            <i class="fas fa-info-circle tutorial-info-icon"></i>
+            <p class="tutorial-info-text">Pastikan pencahayaan ruangan cukup terang dan wajah terlihat jelas tanpa atribut yang menutupi muka untuk hasil verifikasi yang optimal.</p>
         </div>
 
         <div class="modal fade attendance-modal" id="attendanceCameraModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="false">
@@ -103,6 +167,9 @@
                             <div class="verification-panel__top">
                                 <h3 class="verification-panel__title">Live Verification</h3>
                                 <div class="verification-panel__actions">
+                                    <button type="button" id="toggleSoundBtn" onclick="toggleSound()" class="btn btn-sm btn-outline-light py-1 px-2 mr-2" style="font-size: 0.8rem; border-radius: 20px;">
+                                        <i id="soundIcon" class="fas fa-volume-up mr-1"></i><span id="soundLabel">Suara: ON</span>
+                                    </button>
                                     <button type="button" class="info-trigger" id="infoTrigger" aria-label="Lihat panduan absensi">
                                         <i class="fas fa-info"></i>
                                     </button>
@@ -112,11 +179,11 @@
                                 </div>
                             </div>
 
-                            <div class="step-grid">
-                                <div class="step-card is-active" data-step-card="0"><div class="step-card__number">1</div><div class="step-card__title">Wajah Dikenali</div><div class="step-card__caption">Pastikan wajah terbaca jelas oleh kamera.</div></div>
-                                <div class="step-card" data-step-card="1"><div class="step-card__number">2</div><div class="step-card__title">Hadap Kiri</div><div class="step-card__caption">Ikuti arahan dan miringkan wajah ke kiri.</div></div>
-                                <div class="step-card" data-step-card="2"><div class="step-card__number">3</div><div class="step-card__title">Hadap Kanan</div><div class="step-card__caption">Kembalikan posisi dan lanjutkan ke kanan.</div></div>
-                                <div class="step-card" data-step-card="3"><div class="step-card__number">4</div><div class="step-card__title">Buka Mulut</div><div class="step-card__caption">Selesaikan gesture akhir untuk konfirmasi.</div></div>
+                            <div class="step-grid" id="stepGrid">
+                                <div class="step-card is-active" data-step-card="0"><div class="step-card__number">1</div><div class="step-card__title">Wajah Dikenali</div><div class="step-card__caption">Pastikan wajah terbaca jelas.</div></div>
+                                <div class="step-card" data-step-card="1"><div class="step-card__number">2</div><div class="step-card__title" id="stepTitle1">Tantangan 1</div><div class="step-card__caption" id="stepDesc1">Ikuti arahan gesture.</div></div>
+                                <div class="step-card" data-step-card="2"><div class="step-card__number">3</div><div class="step-card__title" id="stepTitle2">Tantangan 2</div><div class="step-card__caption" id="stepDesc2">Ikuti arahan gesture.</div></div>
+                                <div class="step-card" data-step-card="3"><div class="step-card__number">4</div><div class="step-card__title" id="stepTitle3">Tantangan 3</div><div class="step-card__caption" id="stepDesc3">Selesaikan gesture akhir.</div></div>
                             </div>
 
                             <div class="row align-items-center">
@@ -124,7 +191,6 @@
                                     <div class="verification-camera">
                                         <video id="video" autoplay muted playsinline class="verification-video"></video>
                                         <canvas id="overlay" class="verification-overlay"></canvas>
-                                        <div class="face-guide-wrap"><div class="face-guide-ring" id="faceGuideRing" style="--progress-angle: 0deg;"><div class="face-guide-pulse"></div></div></div>
                                         <div class="face-guide-label" id="cameraGuideLabel">Scan Wajah</div>
                                     </div>
                                 </div>
@@ -176,14 +242,75 @@
         let gestureStep = 0;
         let absensiMode = null;
         let isStarting = false;
+        let isFaceRecognized = false;
         let pendingReasonPayload = {};
         let pendingAttendancePhoto = null;
         let isCameraModalVisible = false;
+        let unknownFramesCount = 0;
+        let mustResetToNeutral = false;
         const faceMatchThreshold = 0.55;
         const jadwalMasuk = @json(optional($jadwalPegawai)->jam_masuk);
         const jadwalPulang = @json(optional($jadwalPegawai)->jam_pulang);
         const toleransiTelat = {{ (int) optional($jadwalPegawai)->toleransi_telat }};
-        const gestures = ['Hadap Kiri', 'Hadap Kanan', 'Buka Mulut'];
+
+        // Text-to-Speech & Sound Logic
+        let isSoundEnabled = true;
+        let lastSpokenText = '';
+        let lastSpokenTime = 0;
+
+        function toggleSound() {
+            isSoundEnabled = !isSoundEnabled;
+            const soundIcon = document.getElementById('soundIcon');
+            const soundLabel = document.getElementById('soundLabel');
+            if (isSoundEnabled) {
+                if (soundIcon) soundIcon.className = 'fas fa-volume-up mr-1';
+                if (soundLabel) soundLabel.innerText = 'Suara: ON';
+                speakInstruction('Suara instruksi diaktifkan', true);
+            } else {
+                if (soundIcon) soundIcon.className = 'fas fa-volume-mute mr-1';
+                if (soundLabel) soundLabel.innerText = 'Suara: OFF';
+                if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }
+            }
+        }
+
+        function speakInstruction(text, force = false) {
+            if (!isSoundEnabled || !('speechSynthesis' in window)) return;
+            const now = Date.now();
+            if (!force && text === lastSpokenText && (now - lastSpokenTime < 3500)) return;
+            lastSpokenText = text;
+            lastSpokenTime = now;
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            } catch (e) { console.error('Speech error:', e); }
+        }
+
+        // Pool Tantangan Liveness Dynamic (Hadap Kiri, Hadap Kanan, Buka Mulut)
+        const allChallengePool = [
+            { id: 'kiri', title: 'Hadap Kiri', desc: 'Miringkan wajah sedikit ke kiri', speak: 'Arahkan wajah ke kiri', check: (lm) => detectHeadDirection(lm) === 'kiri' },
+            { id: 'kanan', title: 'Hadap Kanan', desc: 'Miringkan wajah sedikit ke kanan', speak: 'Arahkan wajah ke kanan', check: (lm) => detectHeadDirection(lm) === 'kanan' },
+            { id: 'mulut', title: 'Buka Mulut', desc: 'Buka mulut seperti bilang "ah"', speak: 'Buka mulut Anda', check: (lm) => mouthOpen(lm) }
+        ];
+
+        let activeChallenges = [];
+
+        function randomizeChallenges() {
+            // Shuffle pool & ambil 3 tantangan secara acak
+            const shuffled = [...allChallengePool].sort(() => Math.random() - 0.5);
+            activeChallenges = shuffled.slice(0, 3);
+
+            // Update UI Step Cards
+            for (let i = 0; i < 3; i++) {
+                const elTitle = document.getElementById(`stepTitle${i + 1}`);
+                const elDesc = document.getElementById(`stepDesc${i + 1}`);
+                if (elTitle) elTitle.innerText = activeChallenges[i].title;
+                if (elDesc) elDesc.innerText = activeChallenges[i].desc;
+            }
+        }
 
         function setButtonsDisabled(disabled) { modeButtons.forEach((button) => { button.disabled = disabled; }); }
         function setStatusPill(type, text) { scanStatusPill.className = `status-pill status-pill--${type}`; scanStatusPill.innerText = text; }
@@ -200,7 +327,7 @@
             }
         }
         function updateProgressUI() {
-            const completedCount = absenDone ? 4 : Math.min(gestureStep + 1, 3);
+            const completedCount = absenDone ? 4 : (isFaceRecognized ? Math.min(gestureStep + 1, 3) : 0);
             const progress = Math.round((completedCount / 4) * 100);
             progressPercent.innerText = progress;
             faceGuideRing.style.setProperty('--progress-angle', `${(progress / 100) * 360}deg`);
@@ -211,10 +338,15 @@
                 card.classList.toggle('is-active', isActive);
             });
         }
+
         function resetVerificationUI() {
             absenDone = false;
             gestureStep = 0;
+            isFaceRecognized = false;
+            unknownFramesCount = 0;
+            mustResetToNeutral = false;
             pendingAttendancePhoto = null;
+            randomizeChallenges();
             cameraGuideLabel.innerText = 'Scan Wajah';
             gestureBadge.innerText = 'Mulai verifikasi';
             modeBadge.innerText = absensiMode ? `Mode ${absensiMode === 'masuk' ? 'Masuk' : 'Keluar'} dipilih` : 'Menunggu mode absensi';
@@ -254,9 +386,25 @@
         }
 
         function updateGestureText() {
-            gestureText.innerText = `Silakan lakukan gesture: ${gestures[gestureStep]}`;
-            gestureBadge.innerText = gestures[gestureStep] || 'Selesai';
-            cameraGuideLabel.innerText = gestures[gestureStep] || 'Selesai';
+            if (mustResetToNeutral) {
+                gestureText.innerText = 'Kembali ke posisi netral (lihat lurus ke depan)';
+                gestureBadge.innerText = 'Posisi Netral';
+                cameraGuideLabel.innerText = 'Tengah';
+                speakInstruction('Kembali ke posisi tengah');
+                return;
+            }
+
+            const currentChallenge = activeChallenges[gestureStep];
+            if (currentChallenge) {
+                gestureText.innerText = `Silakan lakukan: ${currentChallenge.title} (${currentChallenge.desc})`;
+                gestureBadge.innerText = currentChallenge.title;
+                cameraGuideLabel.innerText = currentChallenge.title;
+                speakInstruction(currentChallenge.speak);
+            } else {
+                gestureText.innerText = 'Semua tantangan selesai!';
+                gestureBadge.innerText = 'Selesai';
+                cameraGuideLabel.innerText = 'Selesai';
+            }
             updateProgressUI();
         }
 
@@ -302,9 +450,9 @@
                     html: `
                         <div style="text-align:left; display:grid; gap:10px;">
                             <div>1. Dekatkan wajah ke area oval dan hindari backlight kuat dari belakang.</div>
-                            <div>2. Ikuti gesture satu per satu. Setelah kanan, kembalikan wajah ke tengah sebelum buka mulut.</div>
-                            <div>3. Jaga kamera tetap stabil agar confidence wajah tidak turun saat proses berjalan.</div>
-                            <div>4. Foto bukti akan diambil saat wajah kembali netral, bukan saat mulut terbuka.</div>
+                            <div>2. Ikuti gesture satu per satu secara acak yang diminta layar.</div>
+                            <div>3. Setelah gesture, kembalikan wajah ke posisi tengah netral sebelum langkah berikutnya.</div>
+                            <div>4. Foto bukti akan diambil saat wajah netral.</div>
                         </div>
                     `
                 });
@@ -371,6 +519,73 @@
             return mouth[19].y - mouth[13].y > 15;
         }
 
+        function isNeutralState(landmarks) {
+            return detectHeadDirection(landmarks) === 'tengah' && !mouthOpen(landmarks);
+        }
+
+        function checkScreenSpoof(videoElement, detection) {
+            try {
+                const box = detection.detection.box;
+                if (!box || box.width <= 0 || box.height <= 0) return { isSpoof: false };
+
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = 100;
+                tempCanvas.height = 100;
+                const ctx = tempCanvas.getContext('2d');
+                
+                // Crop area wajah + 30% padding sekeliling untuk mendeteksi bezel / bingkai HP
+                const padX = box.width * 0.30;
+                const padY = box.height * 0.30;
+                const cropX = Math.max(0, box.x - padX);
+                const cropY = Math.max(0, box.y - padY);
+                const cropW = Math.min(videoElement.videoWidth - cropX, box.width + (padX * 2));
+                const cropH = Math.min(videoElement.videoHeight - cropY, box.height + (padY * 2));
+
+                ctx.drawImage(videoElement, cropX, cropY, cropW, cropH, 0, 0, 100, 100);
+
+                const imgData = ctx.getImageData(0, 0, 100, 100).data;
+                let glareCount = 0;
+                let highFreqNoise = 0;
+                let darkBezelCount = 0;
+                const totalPixels = 100 * 100;
+
+                for (let i = 0; i < imgData.length; i += 4) {
+                    const r = imgData[i];
+                    const g = imgData[i + 1];
+                    const b = imgData[i + 2];
+                    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+
+                    // 1. Deteksi Glare / Pantulan Layar Kaca HP (Piksel Terang)
+                    if (r > 215 && g > 215 && b > 215) {
+                        glareCount++;
+                    }
+
+                    // 2. Deteksi Bingkai / Bezel HP Hitam di sekitar wajah
+                    if (lum < 30) {
+                        darkBezelCount++;
+                    }
+
+                    // 3. Deteksi Moiré Noise (Garis Piksel Layar Digital)
+                    if (i >= 4) {
+                        const prevLum = 0.299 * imgData[i - 4] + 0.587 * imgData[i - 3] + 0.114 * imgData[i - 2];
+                        highFreqNoise += Math.abs(lum - prevLum);
+                    }
+                }
+
+                const avgNoise = highFreqNoise / totalPixels;
+                const glareRatio = glareCount / totalPixels;
+                const bezelRatio = darkBezelCount / totalPixels;
+
+                // Threshold sensitif untuk mendeteksi Layar HP / Bingkai Bezel Digital
+                if (glareRatio > 0.05 || avgNoise > 22 || bezelRatio > 0.10) {
+                    return { isSpoof: true, reason: 'Terdeteksi Layar HP / Bingkai Bezel Digital' };
+                }
+            } catch (e) {
+                console.error('Screen spoof check error:', e);
+            }
+            return { isSpoof: false };
+        }
+
         function captureAttendancePhoto() {
             const captureCanvas = document.createElement('canvas');
             const width = video.videoWidth || 420;
@@ -382,7 +597,7 @@
         }
 
         function captureNeutralAttendancePhoto(landmarks) {
-            if (pendingAttendancePhoto || mouthOpen(landmarks) || detectHeadDirection(landmarks) !== 'tengah') return;
+            if (pendingAttendancePhoto || !isNeutralState(landmarks)) return;
             pendingAttendancePhoto = captureAttendancePhoto();
             cameraGuideLabel.innerText = 'Foto Siap';
         }
@@ -422,6 +637,14 @@
                 context.clearRect(0, 0, overlay.width, overlay.height);
 
                 if (!resizedDetections.length) {
+                    unknownFramesCount++;
+                    if (unknownFramesCount > 5) {
+                        isFaceRecognized = false;
+                        gestureStep = 0;
+                        pendingAttendancePhoto = null;
+                        mustResetToNeutral = false;
+                        updateProgressUI();
+                    }
                     resultText.innerText = 'Posisikan wajah di dalam frame';
                     gestureText.innerText = 'Pastikan wajah masuk penuh ke dalam area oval';
                     cameraGuideLabel.innerText = 'Cari Wajah';
@@ -429,69 +652,126 @@
                     return;
                 }
 
-                resizedDetections.forEach((detection) => {
-                    const match = faceMatcher.findBestMatch(detection.descriptor);
-                    const matchIsValid = isMatchValid(match);
-                    const label = matchIsValid ? formatMatchLabel(match) : `Unknown (${getMatchSimilarity(match)}%)`;
-                    new faceapi.draw.DrawBox(mirrorBox(detection.detection.box, displaySize.width), { label }).draw(overlay);
-                    resultText.innerText = `Terdeteksi: ${label}`;
-                    const landmarks = detection.landmarks;
+                if (resizedDetections.length > 1) {
+                    isFaceRecognized = false;
+                    gestureStep = 0;
+                    pendingAttendancePhoto = null;
+                    mustResetToNeutral = false;
+                    updateProgressUI();
+                    
+                    resultText.innerText = 'Terlalu banyak wajah!';
+                    gestureText.innerText = 'Pastikan hanya ada 1 orang di depan kamera.';
+                    cameraGuideLabel.innerText = 'Wajah > 1';
+                    setStatusPill('error', 'Blokir');
+                    return;
+                }
 
-                    if (!matchIsValid) {
+                const detection = resizedDetections[0];
+                const match = faceMatcher.findBestMatch(detection.descriptor);
+                const matchIsValid = isMatchValid(match);
+                const label = matchIsValid ? formatMatchLabel(match) : `Unknown (${getMatchSimilarity(match)}%)`;
+                new faceapi.draw.DrawBox(mirrorBox(detection.detection.box, displaySize.width), { label }).draw(overlay);
+                resultText.innerText = `Terdeteksi: ${label}`;
+                const landmarks = detection.landmarks;
+
+                if (!matchIsValid) {
+                    unknownFramesCount++;
+                    if (unknownFramesCount > 5) {
+                        isFaceRecognized = false;
                         gestureStep = 0;
                         pendingAttendancePhoto = null;
-                        cameraGuideLabel.innerText = 'Wajah Tidak Valid';
-                        gestureBadge.innerText = 'Wajah belum cocok';
-                        gestureText.innerText = 'Wajah tidak dikenali. Dekatkan wajah, cari cahaya yang cukup, atau ulangi perekaman dataset.';
-                        setStatusPill('error', 'Unknown');
+                        mustResetToNeutral = false;
                         updateProgressUI();
-                        return;
                     }
+                    cameraGuideLabel.innerText = 'Wajah Tidak Valid';
+                    gestureBadge.innerText = 'Wajah belum cocok';
+                    gestureText.innerText = 'Wajah tidak dikenali. Dekatkan wajah, cari cahaya yang cukup, atau ulangi perekaman dataset.';
+                    setStatusPill('error', 'Unknown');
+                    return;
+                }
 
-                    setStatusPill('success', 'Wajah Terkunci');
-                    if (gestureStep === 0) {
-                        cameraGuideLabel.innerText = 'Hadap Kiri';
-                        gestureBadge.innerText = 'Langkah 1';
-                        if (detectHeadDirection(landmarks) === 'kiri') { gestureStep++; updateGestureText(); }
-                    } else if (gestureStep === 1) {
-                        cameraGuideLabel.innerText = 'Hadap Kanan';
-                        gestureBadge.innerText = 'Langkah 2';
-                        if (detectHeadDirection(landmarks) === 'kanan') { gestureStep++; updateGestureText(); }
-                    } else if (gestureStep === 2) {
-                        cameraGuideLabel.innerText = pendingAttendancePhoto ? 'Buka Mulut' : 'Netral Dulu';
-                        gestureBadge.innerText = pendingAttendancePhoto ? 'Langkah 3' : 'Ambil Foto';
-                        captureNeutralAttendancePhoto(landmarks);
-                        if (mouthOpen(landmarks) && !absenDone) {
-                            absenDone = true;
-                            const fotoBukti = pendingAttendancePhoto || captureAttendancePhoto();
-                            gestureBadge.innerText = 'Menyimpan';
-                            cameraGuideLabel.innerText = 'Verifikasi';
-                            updateProgressUI();
-                            stopCamera();
-                            absenPegawai({ ...pendingReasonPayload, foto_bukti: fotoBukti })
-                                .then((message) => {
-                                    resultText.innerText = 'Absensi Berhasil';
-                                    gestureText.innerText = 'Data absensi berhasil disimpan';
-                                    cameraGuideLabel.innerText = 'Selesai';
-                                    gestureBadge.innerText = 'Sukses';
-                                    setStatusPill('success', 'Selesai');
-                                    showSuccessAlert(message);
-                                })
-                                .catch((error) => {
-                                    absenDone = false;
-                                    gestureStep = 0;
-                                    pendingAttendancePhoto = null;
-                                    resultText.innerText = 'Absensi gagal disimpan';
-                                    gestureText.innerText = error.message;
-                                    cameraGuideLabel.innerText = 'Ulangi';
-                                    gestureBadge.innerText = 'Gagal';
-                                    setStatusPill('error', 'Gagal');
-                                    updateProgressUI();
-                                    showErrorAlert(error.message);
-                                });
-                        }
+                // Cek Spoofing Layar HP (Moiré / Glare Pantulan Kaca)
+                const spoofStatus = checkScreenSpoof(video, detection);
+                if (spoofStatus.isSpoof) {
+                    resultText.innerText = 'Verifikasi Ditolak (Layar HP)';
+                    cameraGuideLabel.innerText = 'Layar Terdeteksi';
+                    gestureBadge.innerText = 'Ditolak (HP)';
+                    gestureText.innerText = 'Ditolak! Terdeteksi pantulan layar HP / media digital. Harap gunakan wajah asli Anda secara langsung.';
+                    setStatusPill('error', 'Spoof HP');
+                    speakInstruction('Absensi ditolak. Terdeteksi pantulan layar HP.');
+                    return;
+                }
+
+                unknownFramesCount = 0;
+                let wasRecognized = isFaceRecognized;
+                isFaceRecognized = true;
+                if (!wasRecognized) {
+                    updateProgressUI();
+                    updateGestureText();
+                }
+                
+                setStatusPill('success', 'Wajah Terkunci');
+                captureNeutralAttendancePhoto(landmarks);
+
+                // Cek pintu reset ke posisi netral terlebih dahulu
+                if (mustResetToNeutral) {
+                    if (isNeutralState(landmarks)) {
+                        mustResetToNeutral = false;
+                        updateGestureText();
+                    } else {
+                        cameraGuideLabel.innerText = 'Tengah';
+                        gestureBadge.innerText = 'Posisi Netral';
+                        gestureText.innerText = 'Posisikan wajah kembali ke tengah frame sebelum tantangan berikutnya.';
+                        speakInstruction('Kembali ke tengah');
                     }
-                });
+                    return;
+                }
+
+                // Jalankan tantangan aktif sesuai urutan acak
+                if (gestureStep < activeChallenges.length) {
+                    const currentChallenge = activeChallenges[gestureStep];
+                    cameraGuideLabel.innerText = currentChallenge.title;
+                    gestureBadge.innerText = `Langkah ${gestureStep + 1}`;
+
+                    if (currentChallenge.check(landmarks)) {
+                        gestureStep++;
+                        mustResetToNeutral = true;
+                        updateGestureText();
+                    } else {
+                        speakInstruction(currentChallenge.speak);
+                    }
+                } else if (!absenDone) {
+                    // Semua tantangan acak selesai! Simpan absensi
+                    absenDone = true;
+                    const fotoBukti = pendingAttendancePhoto || captureAttendancePhoto();
+                    gestureBadge.innerText = 'Menyimpan';
+                    cameraGuideLabel.innerText = 'Verifikasi';
+                    speakInstruction('Verifikasi liveness berhasil', true);
+                    updateProgressUI();
+                    stopCamera();
+                    absenPegawai({ ...pendingReasonPayload, foto_bukti: fotoBukti })
+                        .then((message) => {
+                            resultText.innerText = 'Absensi Berhasil';
+                            gestureText.innerText = 'Data absensi berhasil disimpan';
+                            cameraGuideLabel.innerText = 'Selesai';
+                            gestureBadge.innerText = 'Sukses';
+                            setStatusPill('success', 'Selesai');
+                            showSuccessAlert(message);
+                        })
+                        .catch((error) => {
+                            absenDone = false;
+                            gestureStep = 0;
+                            pendingAttendancePhoto = null;
+                            mustResetToNeutral = false;
+                            resultText.innerText = 'Absensi gagal disimpan';
+                            gestureText.innerText = error.message;
+                            cameraGuideLabel.innerText = 'Ulangi';
+                            gestureBadge.innerText = 'Gagal';
+                            setStatusPill('error', 'Gagal');
+                            updateProgressUI();
+                            showErrorAlert(error.message);
+                        });
+                }
             }, 250);
         }
 

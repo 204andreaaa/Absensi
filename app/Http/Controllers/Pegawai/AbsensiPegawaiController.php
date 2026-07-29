@@ -95,11 +95,13 @@ class AbsensiPegawaiController extends Controller
     public function index()
     {
         $pegawai = Auth::user()->load('jadwal');
+        $holidayMessage = $this->getHolidayMessage(Carbon::today());
 
         return view('pegawai.absensi', [
             'datasetCount' => $pegawai->dataset_wajahs()->count(),
             'minDataset' => 15,
-            'jadwalPegawai' => $pegawai->jadwal
+            'jadwalPegawai' => $pegawai->jadwal,
+            'holidayMessage' => $holidayMessage
         ]);
     }
 

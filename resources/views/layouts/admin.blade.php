@@ -96,7 +96,10 @@ class="rounded-circle mr-1">
 <aside id="sidebar-wrapper">
 
 <div class="sidebar-brand">
-<a href="#">Face Attendance</a>
+  <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center">
+    <img src="{{ asset('admin/dist/assets/img/stisla-fill.svg') }}" alt="Face Attendance" class="mr-2" style="height: 36px;">
+    <span>Face Attendance</span>
+  </a>
 </div>
 
 <ul class="sidebar-menu">
@@ -122,7 +125,16 @@ class="rounded-circle mr-1">
 <li class="{{ request()->is('admin/jadwal*') ? 'active' : '' }}">
   <a class="nav-link" href="{{ route('admin.jadwal.index') }}">
     <i class="fas fa-clock"></i>
-    <span>Jadwal Ke–/li>
+    <span>Jadwal Kerja</span>
+  </a>
+</li>
+
+<li class="{{ request()->is('admin/hari-libur*') ? 'active' : '' }}">
+  <a class="nav-link" href="{{ route('admin.hari-libur.index') }}">
+    <i class="fas fa-calendar"></i>
+    <span>Hari Libur</span>
+  </a>
+</li>
 
 <li class="{{ request()->is('admin/pegawai*') ? 'active' : '' }}">
   <a class="nav-link" href="{{ route('admin.pegawai.index') }}">
@@ -138,6 +150,19 @@ class="rounded-circle mr-1">
     </a>
 </li>
 
+<!-- <li class="{{ request()->routeIs('admin.absensi.camera-testing') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('admin.absensi.camera-testing') }}">
+        <i class="fas fa-camera"></i>
+        <span>Testing Kamera</span>
+    </a>
+</li>
+
+<li class="{{ request()->routeIs('admin.absensi.liveness-testing') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('admin.absensi.liveness-testing') }}">
+        <i class="fas fa-smile-wink"></i>
+        <span>Testing Liveness</span>
+    </a>
+</li> -->
 <li class="menu-header">LAPORAN</li>
 
 <li class="{{ request()->routeIs('admin.laporan.index') ? 'active' : '' }}">
@@ -150,7 +175,7 @@ class="rounded-circle mr-1">
 <li class="{{ request()->routeIs('admin.laporan.tepat-waktu') ? 'active' : '' }}">
 <a class="nav-link" href="{{ route('admin.laporan.tepat-waktu') }}">
 <i class="fas fa-user-check"></i>
-<span>Laporan Tepat Waktu</span>
+<span>Laporan Pegawai</span>
 </a>
 </li>
 

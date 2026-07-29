@@ -33,8 +33,22 @@ class AttendanceReportExport implements FromView, ShouldAutoSize, WithDrawings, 
     {
         $drawings = [];
 
+        // Add Logo at A1
+        $logoPath = public_path('images/logo-mandau.png');
+        if (file_exists($logoPath)) {
+            $logoDrawing = new Drawing();
+            $logoDrawing->setName('Logo Mandau');
+            $logoDrawing->setDescription('Logo Perusahaan');
+            $logoDrawing->setPath($logoPath);
+            $logoDrawing->setHeight(90);
+            $logoDrawing->setCoordinates('A1');
+            $logoDrawing->setOffsetX(10);
+            $logoDrawing->setOffsetY(10);
+            $drawings[] = $logoDrawing;
+        }
+
         foreach ($this->laporanAbsensi as $index => $item) {
-            $row = $index + 2;
+            $row = $index + 9; // Offset by 8 rows due to letterhead
 
             if ($item->foto_masuk && isset($this->imageColumns['masuk'])) {
                 $pathMasuk = public_path('storage/' . $item->foto_masuk);
@@ -82,7 +96,8 @@ class AttendanceReportExport implements FromView, ShouldAutoSize, WithDrawings, 
                     $sheet->getColumnDimension($column)->setWidth(18);
                 }
 
-                foreach (range(2, $this->laporanAbsensi->count() + 1) as $row) {
+                // Adjust row heights for data (starting at row 9)
+                foreach (range(9, $this->laporanAbsensi->count() + 8) as $row) {
                     $sheet->getRowDimension($row)->setRowHeight(60);
                 }
             },
