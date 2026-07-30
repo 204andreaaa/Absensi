@@ -15,10 +15,6 @@ class AbsensiPegawaiController extends Controller
 {
     private function getHolidayMessage(Carbon $date): ?string
     {
-        if ($date->isWeekend()) {
-            return 'Hari ini libur akhir pekan';
-        }
-
         $hariLibur = HariLibur::whereDate('tanggal', $date->toDateString())->first();
 
         if ($hariLibur) {

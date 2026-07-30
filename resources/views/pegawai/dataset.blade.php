@@ -411,11 +411,16 @@
                             return;
                         }
 
-                        await saveDataset(descriptor);
-                        savedDescriptors.push(new Float32Array(descriptor));
+                        const savedSuccessfully = await saveDataset(descriptor);
 
-                        datasetCount++;
-                        updateProgress();
+                        if (savedSuccessfully) {
+                            savedDescriptors.push(new Float32Array(descriptor));
+                            datasetCount++;
+                            updateProgress();
+                        } else {
+                            instructionTitle.innerText = 'Gagal menyimpan ke database';
+                            instructionText.innerText = 'Koneksi ke server hosting bermasalah atau sesi telah kadaluarsa. Silakan muat ulang halaman jika berlanjut.';
+                        }
 
                         setTimeout(() => {
                             isSaving = false;
@@ -426,18 +431,28 @@
 
             async function saveDataset(descriptor) {
                 try {
-                    await fetch("{{ route('pegawai.dataset.store') }}", {
+                    const response = await fetch("{{ route('pegawai.dataset.store') }}", {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Accept': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                         },
                         body: JSON.stringify({
                             descriptor: Array.from(descriptor)
                         })
                     });
+
+                    if (!response.ok) {
+                        console.error('Gagal menyimpan dataset, HTTP Status:', response.status);
+                        return false;
+                    }
+
+                    const result = await response.json();
+                    return result.status === true;
                 } catch (error) {
-                    console.error(error);
+                    console.error('Gagal menghubungi server:', error);
+                    return false;
                 }
             }
         </script>

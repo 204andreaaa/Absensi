@@ -191,6 +191,11 @@
                                     <div class="verification-camera">
                                         <video id="video" autoplay muted playsinline class="verification-video"></video>
                                         <canvas id="overlay" class="verification-overlay"></canvas>
+                                        <div class="face-guide-wrap">
+                                            <div class="face-guide-ring" id="faceGuideRing">
+                                                <div class="face-guide-pulse"></div>
+                                            </div>
+                                        </div>
                                         <div class="face-guide-label" id="cameraGuideLabel">Scan Wajah</div>
                                     </div>
                                 </div>
@@ -329,8 +334,8 @@
         function updateProgressUI() {
             const completedCount = absenDone ? 4 : (isFaceRecognized ? Math.min(gestureStep + 1, 3) : 0);
             const progress = Math.round((completedCount / 4) * 100);
-            progressPercent.innerText = progress;
-            faceGuideRing.style.setProperty('--progress-angle', `${(progress / 100) * 360}deg`);
+            if (progressPercent) progressPercent.innerText = progress;
+            if (faceGuideRing) faceGuideRing.style.setProperty('--progress-angle', `${(progress / 100) * 360}deg`);
             stepCards.forEach((card, index) => {
                 const isComplete = absenDone ? index <= 3 : index < completedCount;
                 const isActive = !absenDone && index === completedCount;

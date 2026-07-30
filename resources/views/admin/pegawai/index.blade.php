@@ -104,24 +104,20 @@ Simpan
 </div>
 
 <div class="card-body">
-
-<table class="table table-bordered" id="tablePegawai">
-
-<thead>
-
-<tr>
-<th>No</th>
-<th>NIK</th>
-<th>Nama</th>
-<th>Departemen</th>
-<th>Jadwal</th>
-<th width="150">Aksi</th>
-</tr>
-
-</thead>
-
-</table>
-
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped w-100" id="tablePegawai" style="width: 100% !important;">
+            <thead>
+                <tr>
+                    <th width="40">No</th>
+                    <th>NIK</th>
+                    <th>Nama</th>
+                    <th>Departemen</th>
+                    <th>Jadwal</th>
+                    <th width="120" class="text-center">Aksi</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
 </div>
 </div>
 
@@ -139,6 +135,7 @@ $(document).ready(function(){
 
 let table = $('#tablePegawai').DataTable({
 
+autoWidth:false,
 processing:true,
 serverSide:true,
 
@@ -150,7 +147,7 @@ columns:[
 {data:'nama'},
 {data:'departemen'},
 {data:'jadwal'},
-{data:'aksi'}
+{data:'aksi', className: 'text-center'}
 ]
 
 });

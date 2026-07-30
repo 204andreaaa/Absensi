@@ -98,7 +98,7 @@ class="rounded-circle mr-1">
 <div class="sidebar-brand">
   <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center">
     <img src="{{ asset('admin/dist/assets/img/stisla-fill.svg') }}" alt="Face Attendance" class="mr-2" style="height: 36px;">
-    <span>Face Attendance</span>
+    <span>Absensi Mandau</span>
   </a>
 </div>
 

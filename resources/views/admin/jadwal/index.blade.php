@@ -95,24 +95,22 @@ Simpan
 </div>
 
 <div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped w-100" id="tableJadwal" style="width: 100% !important;">
 
-<table class="table table-bordered" id="tableJadwal">
+            <thead>
+                <tr>
+                    <th width="40">No</th>
+                    <th>Shift</th>
+                    <th>Jam Masuk</th>
+                    <th>Jam Pulang</th>
+                    <th>Toleransi</th>
+                    <th width="120" class="text-center">Aksi</th>
+                </tr>
+            </thead>
 
-<thead>
-
-<tr>
-<th>No</th>
-<th>Shift</th>
-<th>Jam Masuk</th>
-<th>Jam Pulang</th>
-<th>Toleransi</th>
-<th width="150">Aksi</th>
-</tr>
-
-</thead>
-
-</table>
-
+        </table>
+    </div>
 </div>
 </div>
 </div>
@@ -131,6 +129,7 @@ $(document).ready(function(){
 
 let table = $('#tableJadwal').DataTable({
 
+autoWidth:false,
 processing:true,
 serverSide:true,
 
@@ -143,7 +142,7 @@ columns:[
 {data:'jam_masuk'},
 {data:'jam_pulang'},
 {data:'toleransi_telat'},
-{data:'aksi'}
+{data:'aksi', className: 'text-center'}
 
 ]
 

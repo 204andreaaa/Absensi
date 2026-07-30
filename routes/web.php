@@ -137,6 +137,7 @@ Route::prefix('pegawai')
         Route::get('/riwayat-absensi',[AbsensiPegawaiController::class,'riwayat'])->name('riwayat');
         
         Route::get('/profile', [\App\Http\Controllers\Pegawai\ProfileController::class, 'index'])->name('profile');
+        Route::post('/profile/update', [\App\Http\Controllers\Pegawai\ProfileController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/update-password', [\App\Http\Controllers\Pegawai\ProfileController::class, 'updatePassword'])->name('profile.update-password');
         Route::post('/profile/update-foto', [\App\Http\Controllers\Pegawai\ProfileController::class, 'updateFoto'])->name('profile.update-foto');
     });

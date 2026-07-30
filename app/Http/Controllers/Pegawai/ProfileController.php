@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Pegawai;
 
 class ProfileController extends Controller
@@ -20,11 +21,54 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function updateProfile(Request $request)
+    {
+        $pegawai = Auth::user();
+
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'nama.required' => 'Nama lengkap wajib diisi.',
+            'foto.image' => 'File harus berupa gambar.',
+            'foto.max' => 'Ukuran foto maksimal 2MB.',
+        ]);
+
+        $updateData = [
+            'nama' => $request->nama,
+        ];
+
+        // Process photo upload if provided
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            
+            // Delete old photo if exists
+            if ($pegawai->foto && Storage::disk('public')->exists($pegawai->foto)) {
+                Storage::disk('public')->delete($pegawai->foto);
+            }
+
+            // Upload new photo
+            $filename = 'profile/' . $pegawai->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            Storage::disk('public')->put($filename, file_get_contents($file));
+
+            $updateData['foto'] = $filename;
+        }
+
+        Pegawai::where('id', $pegawai->id)->update($updateData);
+
+        return back()->with('success', 'Profil dan nama berhasil diperbarui!');
+    }
+
     public function updatePassword(Request $request)
     {
         $request->validate([
             'current_password' => 'required',
             'new_password' => 'required|min:6|confirmed',
+        ], [
+            'current_password.required' => 'Password saat ini wajib diisi.',
+            'new_password.required' => 'Password baru wajib diisi.',
+            'new_password.min' => 'Password baru minimal 6 karakter.',
+            'new_password.confirmed' => 'Konfirmasi password baru tidak cocok.',
         ]);
 
         $pegawai = Auth::user();
@@ -42,29 +86,6 @@ class ProfileController extends Controller
 
     public function updateFoto(Request $request)
     {
-        $request->validate([
-            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        $pegawai = Auth::user();
-
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            
-            // Delete old photo if exists
-            if ($pegawai->foto && \Illuminate\Support\Facades\Storage::disk('public')->exists($pegawai->foto)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($pegawai->foto);
-            }
-
-            // Upload new photo
-            $filename = 'profile/' . $pegawai->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, file_get_contents($file));
-
-            Pegawai::where('id', $pegawai->id)->update([
-                'foto' => $filename
-            ]);
-        }
-
-        return back()->with('success', 'Foto profil berhasil diperbarui!');
+        return $this->updateProfile($request);
     }
 }

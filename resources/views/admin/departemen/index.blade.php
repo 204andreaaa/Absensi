@@ -85,23 +85,24 @@
             </div>
 
             <div class="card-body">
+                <div class="table-responsive">
+                    <table
+                        class="table table-bordered table-striped w-100"
+                        id="tableDepartemen"
+                        style="width: 100% !important;"
+                    >
 
-                <table
-                    class="table table-bordered table-striped"
-                    id="tableDepartemen"
-                >
+                        <thead>
+                            <tr>
+                                <th width="60">No</th>
+                                <th>Nama</th>
+                                <th>Keterangan</th>
+                                <th width="150" class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
 
-                    <thead>
-                        <tr>
-                            <th width="60">No</th>
-                            <th>Nama</th>
-                            <th>Keterangan</th>
-                            <th width="150">Aksi</th>
-                        </tr>
-                    </thead>
-
-                </table>
-
+                    </table>
+                </div>
             </div>
 
         </div>
@@ -129,6 +130,7 @@ $(document).ready(function(){
 
     let table = $('#tableDepartemen').DataTable({
 
+        autoWidth: false,
         processing: true,
         serverSide: true,
 
@@ -152,7 +154,8 @@ $(document).ready(function(){
             {
                 data: 'aksi',
                 orderable: false,
-                searchable: false
+                searchable: false,
+                className: 'text-center'
             }
 
         ]

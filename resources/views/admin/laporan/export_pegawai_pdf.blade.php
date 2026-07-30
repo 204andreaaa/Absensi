@@ -1,115 +1,227 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $reportTitle }}</title>
     <style>
+        @page {
+            size: A4 portrait;
+            margin: 12mm 15mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            font-size: 11pt;
-            color: #333;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10pt;
+            color: #1e293b;
             margin: 0;
             padding: 0;
+            background: #ffffff;
         }
-        .header {
-            text-align: center;
+
+        /* NO PRINT ACTION BAR */
+        .no-print-bar {
+            background: #1e293b;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
+            border-radius: 8px;
         }
-        .header img {
-            max-height: 80px;
-            position: absolute;
-            left: 0;
-            top: 0;
-        }
-        .header h2 {
-            margin: 0 0 5px 0;
-            font-size: 16pt;
-        }
-        .header p {
-            margin: 0;
-            font-size: 10pt;
-            color: #666;
-        }
-        .report-title {
-            text-align: center;
-            font-size: 14pt;
+
+        .no-print-bar span {
+            color: #ffffff;
             font-weight: bold;
-            margin: 20px 0;
-            text-transform: uppercase;
+            font-size: 14px;
         }
-        table {
+
+        .btn-action {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-print {
+            background: #4f46e5;
+            color: #ffffff;
+        }
+
+        .btn-close {
+            background: #64748b;
+            color: #ffffff;
+            margin-left: 8px;
+        }
+
+        @media print {
+            .no-print-bar {
+                display: none !important;
+            }
+            body {
+                background: #ffffff !important;
+            }
+        }
+
+        /* REPORT TITLE */
+        .report-title-box {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .report-title-box h3 {
+            margin: 0;
+            font-size: 13pt;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #0f172a;
+            letter-spacing: 0.8px;
+        }
+
+        /* DATA TABLE */
+        table.data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
-        th, td {
-            border: 1px solid #ddd;
+
+        table.data-table th {
+            background-color: #f1f5f9 !important;
+            color: #0f172a;
+            font-size: 9pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid #cbd5e1;
+            padding: 9px 6px;
+            text-align: center;
+        }
+
+        table.data-table td {
+            border: 1px solid #cbd5e1;
             padding: 8px;
-            text-align: left;
+            font-size: 9.5pt;
+            color: #334155;
             vertical-align: middle;
         }
-        th {
-            background-color: #f8f9fa;
+
+        table.data-table tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .foto-thumb {
+            width: 42px;
+            height: 42px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 1.5px solid #cbd5e1;
+            display: inline-block;
+        }
+
+        .no-photo-badge {
+            color: #94a3b8;
+            font-size: 8.5pt;
+            font-style: italic;
+        }
+
+        .status-badge-active {
+            color: #16a34a;
             font-weight: bold;
-            text-align: center;
         }
-        td.text-center {
-            text-align: center;
+
+        .status-badge-inactive {
+            color: #dc2626;
+            font-weight: bold;
         }
-        .footer {
+
+        /* SIGNATURE FOOTER */
+        .footer-section {
+            width: 100%;
             margin-top: 30px;
-            text-align: right;
-            font-size: 10pt;
+            page-break-inside: avoid;
         }
-        .signature {
-            margin-top: 50px;
-            width: 200px;
-            float: right;
+
+        .signature-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+        }
+
+        .signature-table td {
+            border: none !important;
+            vertical-align: top;
+        }
+
+        .signature-box {
+            width: 220px;
             text-align: center;
+            float: right;
         }
-        .signature-line {
-            border-top: 1px solid #000;
-            margin-top: 60px;
-            padding-top: 5px;
+
+        .signature-date {
+            font-size: 9pt;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .signature-title {
+            font-size: 9.5pt;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 60px;
+        }
+
+        .signature-name {
+            font-size: 9.5pt;
+            font-weight: 800;
+            color: #0f172a;
+            border-top: 1.5px solid #0f172a;
+            padding-top: 4px;
+            display: inline-block;
+            min-width: 160px;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        @php
-            $logoPath = public_path('images/logo-mandau.png');
-            $logoBase64 = '';
-            if (file_exists($logoPath)) {
-                $logoData = base64_encode(file_get_contents($logoPath));
-                $logoBase64 = 'data:image/png;base64,' . $logoData;
-            }
-        @endphp
 
-        @if($logoBase64)
-            <img src="{{ $logoBase64 }}" alt="Logo">
-        @endif
-
-        <h2>YAYASAN MANDAU BERKARYA</h2>
-        <p>Jl. Pendidikan No. 123, Kota Mandau<br>
-        Telp: (0765) 123456 | Email: info@mandauberkarya.id</p>
+    <!-- ACTION BAR UNTUK BROWSER -->
+    <div class="no-print-bar">
+        <span>Preview Print Laporan Pegawai</span>
+        <div>
+            <button onclick="window.print()" class="btn-action btn-print">🖨️ Cetak / Simpan PDF</button>
+            <button onclick="window.close()" class="btn-action btn-close">✖ Tutup</button>
+        </div>
     </div>
 
-    <div class="report-title">
-        {{ $reportTitle }}
+    <!-- KOP SURAT STANDAR LAPORAN -->
+    @include('admin.laporan.partials.kop_surat')
+
+    <!-- JUDUL LAPORAN -->
+    <div class="report-title-box">
+        <h3>{{ $reportTitle }}</h3>
     </div>
 
-    <table>
+    <!-- TABEL DATA PEGAWAI -->
+    <table class="data-table">
         <thead>
             <tr>
-                <th>No</th>
-                <th>Foto</th>
-                <th>NIK</th>
-                <th>Nama Pegawai</th>
-                <th>Departemen</th>
-                <th>Jadwal / Shift</th>
-                <th>Status</th>
+                <th style="width: 5%;">No</th>
+                <th style="width: 12%;">Foto</th>
+                <th style="width: 13%;">NIK</th>
+                <th style="width: 25%;">Nama Pegawai</th>
+                <th style="width: 18%;">Departemen</th>
+                <th style="width: 15%;">Jadwal / Shift</th>
+                <th style="width: 12%;">Status</th>
             </tr>
         </thead>
         <tbody>
@@ -130,30 +242,44 @@
                         @endphp
 
                         @if($fotoBase64)
-                            <img src="{{ $fotoBase64 }}" alt="Foto" style="max-height: 50px; border-radius: 4px;">
+                            <img src="{{ $fotoBase64 }}" alt="Foto" class="foto-thumb">
                         @else
-                            -
+                            <span class="no-photo-badge">-</span>
                         @endif
                     </td>
-                    <td class="text-center">{{ $item->nik }}</td>
-                    <td>{{ $item->nama }}</td>
+                    <td class="text-center" style="font-weight: 600;">{{ $item->nik }}</td>
+                    <td style="font-weight: 600; color: #0f172a;">{{ $item->nama }}</td>
                     <td>{{ optional($item->departemen)->nama_departemen ?? '-' }}</td>
                     <td class="text-center">{{ optional($item->jadwal)->nama_shift ?? '-' }}</td>
-                    <td class="text-center">{{ $item->status ? 'Aktif' : 'Non Aktif' }}</td>
+                    <td class="text-center">
+                        @if($item->status)
+                            <span class="status-badge-active">Aktif</span>
+                        @else
+                            <span class="status-badge-inactive">Non Aktif</span>
+                        @endif
+                    </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 
-    <div class="footer">
-        <p>Dicetak pada: {{ \Carbon\Carbon::now()->translatedFormat('d F Y H:i') }}</p>
-
-        <div class="signature">
-            <p>Mengetahui,</p>
-            <div class="signature-line">
-                <strong>Admin HRD</strong>
-            </div>
-        </div>
+    <!-- TANDA TANGAN HRD -->
+    <div class="footer-section">
+        <table class="signature-table">
+            <tr>
+                <td style="width: 60%;"></td>
+                <td style="width: 40%;">
+                    <div class="signature-box">
+                        <div class="signature-date">
+                            Dicetak pada: {{ \Carbon\Carbon::now()->translatedFormat('d F Y H:i') }}
+                        </div>
+                        <div class="signature-title">Mengetahui,</div>
+                        <div class="signature-name">Admin HRD</div>
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
+
 </body>
 </html>
