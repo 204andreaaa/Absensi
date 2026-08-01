@@ -514,8 +514,8 @@
             const eyeCenterX = (leftEyeCenter.x + rightEyeCenter.x) / 2;
             const noseTipX = nose[3].x;
             const diff = noseTipX - eyeCenterX;
-            if (diff > 12) return 'kiri';
-            if (diff < -12) return 'kanan';
+            if (diff > 7) return 'kiri';
+            if (diff < -7) return 'kanan';
             return 'tengah';
         }
 
@@ -661,9 +661,10 @@
                 resultText.innerText = `Terdeteksi: ${label}`;
                 const landmarks = detection.landmarks;
 
-                if (!matchIsValid) {
+                // Jika wajah sudah pernah dikenali di awal, pertahankan status terkunci saat melakukan tantangan gerakan
+                if (!matchIsValid && !isFaceRecognized) {
                     unknownFramesCount++;
-                    if (unknownFramesCount > 5) {
+                    if (unknownFramesCount > 30) {
                         isFaceRecognized = false;
                         gestureStep = 0;
                         pendingAttendancePhoto = null;
