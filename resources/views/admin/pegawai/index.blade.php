@@ -154,29 +154,31 @@ columns:[
 });
 
 
-$('#formPegawai').off('submit').on('submit',function(e){
-
-e.preventDefault();
-
-$.ajax({
-
-url:"{{ route('admin.pegawai.store') }}",
-
-type:"POST",
-
-data:$(this).serialize(),
-
-success:function(){
-
-$('#formPegawai')[0].reset();
-$('#id').val('');
-
-table.ajax.reload();
-
-}
-
-});
-
+$('#formPegawai').off('submit').on('submit', function(e){
+    e.preventDefault();
+    $.ajax({
+        url: "{{ route('admin.pegawai.store') }}",
+        type: "POST",
+        data: $(this).serialize(),
+        success: function(){
+            $('#formPegawai')[0].reset();
+            $('#id').val('');
+            table.ajax.reload();
+            alert('Data pegawai berhasil disimpan!');
+        },
+        error: function(xhr){
+            if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
+                let errors = xhr.responseJSON.errors;
+                let errMsg = '';
+                $.each(errors, function(key, value){
+                    errMsg += '• ' + value[0] + '\n';
+                });
+                alert('Periksa Kembali Inputan:\n' + errMsg);
+            } else {
+                alert('Gagal menyimpan data pegawai. Silakan periksa koneksi atau inputan.');
+            }
+        }
+    });
 });
 
 

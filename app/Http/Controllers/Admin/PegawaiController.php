@@ -54,11 +54,25 @@ class PegawaiController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'nama' => 'required',
             'departemen_id' => 'required',
             'jadwal_kerja_id' => 'required',
             'username' => 'required|unique:pegawais,username,' . $request->id,
+        ];
+
+        if (empty($request->id)) {
+            $rules['password'] = 'required|min:4';
+        }
+
+        $request->validate($rules, [
+            'nama.required' => 'Nama pegawai wajib diisi.',
+            'departemen_id.required' => 'Departemen wajib dipilih.',
+            'jadwal_kerja_id.required' => 'Jadwal kerja wajib dipilih.',
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username sudah digunakan oleh pegawai lain.',
+            'password.required' => 'Password wajib diisi untuk pegawai baru.',
+            'password.min' => 'Password minimal 4 karakter.',
         ]);
 
         // Auto-generate NIK jika dikosongkan/tambah pegawai baru, atau jaga NIK lama jika edit
