@@ -159,7 +159,7 @@
 <script>
 $(document).ready(function(){
 
-    function compressImageFile(file, maxWidth = 1280, quality = 0.8) {
+    function compressImageFile(file, maxWidth = 800, quality = 0.6) {
         return new Promise((resolve) => {
             if (!file.type.startsWith('image/')) {
                 resolve(file);
