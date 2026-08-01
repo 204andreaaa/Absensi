@@ -634,11 +634,29 @@ class AbsensiController extends Controller
     public function resetHariIni()
     {
         $todayString = Carbon::today()->toDateString();
-        Absensi::whereDate('tanggal', $todayString)->delete();
+        $records = Absensi::whereDate('tanggal', $todayString)->get();
+        foreach ($records as $record) {
+            $record->delete();
+        }
         
         return response()->json([
             'status' => true,
             'message' => 'Seluruh absensi hari ini berhasil dihapus (Mode Testing)'
+        ]);
+    }
+
+    public function resetTotal()
+    {
+        $records = Absensi::all();
+        foreach ($records as $record) {
+            $record->delete();
+        }
+
+        Storage::disk('public')->deleteDirectory('attendance');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Seluruh data presensi dan file fotonya di storage berhasil dihapus bersih!'
         ]);
     }
 
@@ -652,4 +670,173 @@ class AbsensiController extends Controller
         return view('admin.absensi.liveness_testing');
     }
 
+    public function injectForm()
+    {
+        $pegawais = Pegawai::orderBy('nama')->get();
+        return view('admin.absensi.inject', compact('pegawais'));
+    }
+
+    public function injectProcess(Request $request)
+    {
+        $request->validate([
+            'pegawai_id' => 'required|exists:pegawais,id',
+            'bulan' => 'required|numeric|between:1,12',
+            'tahun' => 'required|numeric|between:2020,2030',
+            'foto_masuk' => 'required|array|min:1',
+            'foto_masuk.*' => 'image|mimes:jpeg,jpg,png|max:5120',
+            'foto_pulang' => 'nullable|array',
+            'foto_pulang.*' => 'image|mimes:jpeg,jpg,png|max:5120',
+        ], [
+            'pegawai_id.required' => 'Pilih pegawai terlebih dahulu.',
+            'foto_masuk.required' => 'Minimal upload 1 foto presensi masuk.',
+            'foto_masuk.*.image' => 'File yang diunggah harus berupa gambar (jpg, jpeg, png).',
+        ]);
+
+        $pegawai = Pegawai::findOrFail($request->pegawai_id);
+        $bulan = (int) $request->bulan;
+        $tahun = (int) $request->tahun;
+        $modeTanggal = $request->input('mode_tanggal', 'random');
+
+        $fotoMasukList = $request->file('foto_masuk', []);
+        $fotoPulangList = $request->file('foto_pulang', []);
+
+        // Urutkan file berdasarkan nama file (Natural Sort) agar pasangan (contoh: 1_masuk.jpg & 1_pulang.jpg) cocok 100%
+        usort($fotoMasukList, function ($a, $b) {
+            return strnatcmp($a->getClientOriginalName(), $b->getClientOriginalName());
+        });
+
+        if (!empty($fotoPulangList)) {
+            usort($fotoPulangList, function ($a, $b) {
+                return strnatcmp($a->getClientOriginalName(), $b->getClientOriginalName());
+            });
+        }
+
+        $jumlahPasang = count($fotoMasukList);
+
+        $startDate = Carbon::createFromDate($tahun, $bulan, 1);
+        $daysInMonth = $startDate->daysInMonth;
+        $hariLiburMap = HariLibur::whereYear('tanggal', $tahun)->whereMonth('tanggal', $bulan)->pluck('nama_libur', 'tanggal')->toArray();
+
+        // 1. Ambil semua tanggal yang SUDAH TERISI presensi untuk pegawai ini di bulan tersebut
+        $existingDates = Absensi::where('pegawai_id', $pegawai->id)
+            ->whereYear('tanggal', $tahun)
+            ->whereMonth('tanggal', $bulan)
+            ->pluck('tanggal')
+            ->toArray();
+
+        // Jika user memilih checkbox reset_bulan_ini, hapus presensi lama dulu
+        if ($request->boolean('reset_bulan_ini', false)) {
+            $oldRecords = Absensi::where('pegawai_id', $pegawai->id)
+                ->whereYear('tanggal', $tahun)
+                ->whereMonth('tanggal', $bulan)
+                ->get();
+            foreach ($oldRecords as $old) {
+                $old->delete();
+            }
+            $existingDates = [];
+        }
+
+        // 2. Filter hari kerja HANYA yang masih KOSONG (belum pernah diisi presensi)
+        $availableWorkdays = [];
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = Carbon::createFromDate($tahun, $bulan, $day);
+            $dateStr = $date->toDateString();
+            if (!$date->isWeekend() && !isset($hariLiburMap[$dateStr]) && !in_array($dateStr, $existingDates)) {
+                $availableWorkdays[] = $dateStr;
+            }
+        }
+
+        if (empty($availableWorkdays)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Seluruh hari kerja pada bulan dan tahun yang dipilih sudah terisi presensi! (Gunakan centang Reset jika ingin mengulang dari awal)'
+            ], 422);
+        }
+
+        if ($modeTanggal === 'random') {
+            shuffle($availableWorkdays);
+            $selectedDates = array_slice($availableWorkdays, 0, $jumlahPasang);
+            sort($selectedDates);
+        } else {
+            $selectedDates = array_slice($availableWorkdays, 0, $jumlahPasang);
+        }
+
+        $insertedCount = 0;
+        foreach ($selectedDates as $index => $dateStr) {
+            $dayDir = 'attendance/' . $dateStr;
+
+            $fileMasuk = $fotoMasukList[$index];
+            $extMasuk = $fileMasuk->getClientOriginalExtension();
+            $pathMasukRel = "{$dayDir}/masuk_{$pegawai->id}_" . time() . "_{$index}.{$extMasuk}";
+            Storage::disk('public')->putFileAs('', $fileMasuk, $pathMasukRel);
+
+            if (isset($fotoPulangList[$index])) {
+                $filePulang = $fotoPulangList[$index];
+                $extPulang = $filePulang->getClientOriginalExtension();
+                $pathPulangRel = "{$dayDir}/pulang_{$pegawai->id}_" . time() . "_{$index}.{$extPulang}";
+                Storage::disk('public')->putFileAs('', $filePulang, $pathPulangRel);
+            } else {
+                $pathPulangRel = "{$dayDir}/pulang_{$pegawai->id}_" . time() . "_{$index}.{$extMasuk}";
+                Storage::disk('public')->copy($pathMasukRel, $pathPulangRel);
+            }
+
+            $alasanTelatList = [
+                'Macet parah di jalan utama',
+                'Ban kendaraan bocor saat berangkat',
+                'Kondisi cuaca hujan deras & banjir',
+                'Kendaraan mogok di jalan',
+                'Antrean panjang di perlintasan kereta'
+            ];
+
+            $alasanPulangAwalList = [
+                'Keperluan keluarga mendesak',
+                'Kondisi badan kurang fit / sakit',
+                'Izin mengurus dokumen ke dinas',
+                'Menjemput anak sekolah emergency',
+                'Ada perbaikan instalasi listrik di rumah'
+            ];
+
+            $withRandomStatus = $request->boolean('random_status', true);
+
+            $status = 'tepat_waktu';
+            $alasanTelat = null;
+            $alasanPulangAwal = null;
+            $jamMasuk = sprintf('07:%02d:%02d', rand(45, 58), rand(10, 59));
+            $jamPulang = sprintf('17:%02d:%02d', rand(2, 20), rand(10, 59));
+
+            if ($withRandomStatus) {
+                $chance = rand(1, 100);
+                if ($chance <= 12) { // ~12% Peluang Terlambat
+                    $jamMasuk = sprintf('08:%02d:%02d', rand(16, 35), rand(10, 59));
+                    $status = 'terlambat';
+                    $alasanTelat = $alasanTelatList[array_rand($alasanTelatList)];
+                } elseif ($chance >= 88) { // ~12% Peluang Pulang Cepat
+                    $jamPulang = sprintf('15:%02d:%02d', rand(30, 55), rand(10, 59));
+                    $alasanPulangAwal = $alasanPulangAwalList[array_rand($alasanPulangAwalList)];
+                }
+            }
+
+            Absensi::updateOrCreate(
+                ['pegawai_id' => $pegawai->id, 'tanggal' => $dateStr],
+                [
+                    'jam_masuk' => $jamMasuk,
+                    'jam_pulang' => $jamPulang,
+                    'status' => $status,
+                    'alasan_telat' => $alasanTelat,
+                    'alasan_pulang_awal' => $alasanPulangAwal,
+                    'foto_masuk' => $pathMasukRel,
+                    'foto_pulang' => $pathPulangRel
+                ]
+            );
+
+            $insertedCount++;
+        }
+
+        $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F');
+
+        return response()->json([
+            'success' => true,
+            'message' => "Berhasil menginjek {$insertedCount} hari presensi untuk {$pegawai->nama} pada bulan {$namaBulan} {$tahun} secara " . ($modeTanggal === 'random' ? 'ACAK (Random)' : 'URUT') . "!"
+        ]);
+    }
 }

@@ -150,6 +150,13 @@ class="rounded-circle mr-1">
     </a>
 </li>
 
+<li class="{{ request()->is('admin/absensi/inject*') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('admin.absensi.inject-form') }}">
+        <i class="fas fa-magic"></i>
+        <span>Inject Presensi Bulk</span>
+    </a>
+</li>
+
 <!-- <li class="{{ request()->routeIs('admin.absensi.camera-testing') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('admin.absensi.camera-testing') }}">
         <i class="fas fa-camera"></i>
