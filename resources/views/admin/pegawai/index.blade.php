@@ -23,8 +23,9 @@
 <input type="hidden" id="id" name="id">
 
 <div class="form-group">
-<label>NIK</label>
-<input type="text" class="form-control" name="nik" id="nik">
+<label>NIK (Nomor Induk Karyawan)</label>
+<input type="text" class="form-control" name="nik" id="nik" readonly placeholder="Otomatis oleh sistem" style="background-color: #e9ecef; cursor: not-allowed;">
+<small class="form-text text-muted">NIK dibuat otomatis oleh sistem dan terkunci (tidak bisa diubah).</small>
 </div>
 
 <div class="form-group">

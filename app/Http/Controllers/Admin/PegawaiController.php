@@ -54,26 +54,52 @@ class PegawaiController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'nama' => 'required',
+            'departemen_id' => 'required',
+            'jadwal_kerja_id' => 'required',
+            'username' => 'required|unique:pegawais,username,' . $request->id,
+        ]);
+
+        // Auto-generate NIK jika dikosongkan/tambah pegawai baru, atau jaga NIK lama jika edit
+        if (!empty($request->id)) {
+            $existingPegawai = Pegawai::find($request->id);
+            $nik = $existingPegawai ? $existingPegawai->nik : $request->nik;
+        } else {
+            $yearMonth = date('Ym');
+            $lastPegawai = Pegawai::where('nik', 'like', $yearMonth . '%')->latest('id')->first();
+            if ($lastPegawai && preg_match('/' . $yearMonth . '(\d+)/', $lastPegawai->nik, $matches)) {
+                $lastSeq = (int) $matches[1];
+                $nik = $yearMonth . sprintf('%04d', $lastSeq + 1);
+            } else {
+                $count = Pegawai::count() + 1;
+                $nik = $yearMonth . sprintf('%04d', $count);
+            }
+        }
+
+        $status = ($request->status == '1' || $request->status === 1 || strtolower((string)$request->status) === 'aktif') ? 1 : 0;
+
+        $data = [
+            'nik' => $nik,
+            'nama' => $request->nama,
+            'departemen_id' => $request->departemen_id,
+            'jadwal_kerja_id' => $request->jadwal_kerja_id,
+            'jabatan' => $request->jabatan,
+            'username' => $request->username,
+            'status' => $status
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
 
         Pegawai::updateOrCreate(
-
-            ['id'=>$request->id],
-
-            [
-                'nik'=>$request->nik,
-                'nama'=>$request->nama,
-                'departemen_id'=>$request->departemen_id,
-                'jadwal_kerja_id'=>$request->jadwal_kerja_id,
-                'jabatan'=>$request->jabatan,
-                'username'=>$request->username,
-                'password'=>Hash::make($request->password),
-                'status'=>$request->status
-            ]
-
+            ['id' => $request->id],
+            $data
         );
 
         return response()->json([
-            'success'=>true
+            'success' => true
         ]);
     }
 
