@@ -1,69 +1,284 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $reportTitle ?? 'Laporan Rekap Bulanan' }}</title>
+    <title>{{ $reportTitle }}</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #000; padding: 8px; text-align: left; font-size: 12px; }
-        th { background-color: #f2f2f2; }
-        h3 { text-align: center; margin: 10px 0 20px 0; }
-        .text-center { text-align: center; }
+        @page {
+            size: A4 landscape;
+            margin: 8mm 10mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 8pt;
+            color: #0f172a;
+            margin: 0;
+            padding: 0;
+            background: #ffffff;
+        }
+
+        /* NO PRINT ACTION BAR */
+        .no-print-bar {
+            background: #1e293b;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+
+        .no-print-bar span {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-action {
+            padding: 6px 14px;
+            border-radius: 4px;
+            border: none;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .btn-print {
+            background: #4f46e5;
+            color: #ffffff;
+        }
+
+        .btn-close {
+            background: #64748b;
+            color: #ffffff;
+            margin-left: 6px;
+        }
+
         @media print {
-            body { margin: 0; }
-            .no-print { display: none; }
+            .no-print-bar {
+                display: none !important;
+            }
+        }
+
+        /* REPORT TITLE */
+        .report-title-box {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .report-title-box h3 {
+            margin: 0;
+            font-size: 12pt;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #0f172a;
+            letter-spacing: 0.5px;
+        }
+
+        /* MATRIX TABLE */
+        table.matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        table.matrix-table th {
+            border: 1px solid #64748b;
+            padding: 5px 2px;
+            text-align: center;
+            font-size: 7.5pt;
+            font-weight: bold;
+            background-color: #f1f5f9;
+        }
+
+        table.matrix-table th.bg-holiday {
+            background-color: #fecaca !important;
+            color: #991b1b;
+        }
+
+        table.matrix-table td {
+            border: 1px solid #cbd5e1;
+            padding: 4px 2px;
+            text-align: center;
+            font-size: 8pt;
+            vertical-align: middle;
+        }
+
+        .bg-off-cell {
+            background-color: #f8fafc !important;
+        }
+
+        .text-hadir {
+            color: #16a34a;
+            font-weight: bold;
+            font-size: 9.5pt;
+        }
+
+        .text-alpa {
+            color: #dc2626;
+            font-weight: bold;
+            font-size: 9.5pt;
+        }
+
+        .text-off {
+            color: #94a3b8;
+        }
+
+        /* SIGNATURE FOOTER */
+        .footer-section {
+            width: 100%;
+            margin-top: 15px;
+            page-break-inside: avoid;
+        }
+
+        .signature-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+        }
+
+        .signature-table td {
+            border: none !important;
+            vertical-align: top;
+        }
+
+        .signature-box {
+            width: 200px;
+            text-align: center;
+            float: right;
+        }
+
+        .signature-date {
+            font-size: 8.5pt;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+
+        .signature-title {
+            font-size: 8.5pt;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 40px;
+        }
+
+        .signature-name {
+            font-size: 8.5pt;
+            font-weight: 800;
+            color: #0f172a;
+            border-top: 1px solid #0f172a;
+            padding-top: 3px;
+            display: inline-block;
+            min-width: 140px;
         }
     </style>
 </head>
 <body>
-    <div class="no-print" style="margin-bottom: 20px;">
-        <button onclick="window.print()" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">Print / Save as PDF</button>
-        <button onclick="window.close()" style="padding: 10px 20px; background-color: #f44336; color: white; border: none; cursor: pointer; margin-left: 10px;">Tutup</button>
+
+    <!-- ACTION BAR UNTUK BROWSER -->
+    <div class="no-print-bar">
+        <span>Preview Print Laporan Kehadiran Bulanan (Grid Matrix)</span>
+        <div>
+            <button onclick="window.print()" class="btn-action btn-print">🖨️ Cetak / Simpan PDF</button>
+            <button onclick="window.close()" class="btn-action btn-close">✖ Tutup</button>
+        </div>
     </div>
 
+    <!-- KOP SURAT STANDAR -->
     @include('admin.laporan.partials.kop_surat')
 
-    <h3>{{ $reportTitle ?? 'Laporan Rekap Bulanan' }}</h3>
+    <!-- JUDUL LAPORAN -->
+    <div class="report-title-box">
+        <h3>REKAPITULASI KEHADIRAN PEGAWAI - BULAN {{ strtoupper($bulan_label) }}</h3>
+    </div>
 
-    <table>
+    <!-- TABEL MATRIX GRID -->
+    <table class="matrix-table">
         <thead>
             <tr>
-                <th>No</th>
-                <th>Pegawai</th>
-                <th>Bulan</th>
-                <th>Shift</th>
-                <th>Total Hadir</th>
-                <th>Tepat Waktu</th>
-                <th>Terlambat</th>
-                <th>Pulang Cepat</th>
-                <th>Sesuai Jadwal</th>
-                <th>Belum Pulang</th>
+                <th style="width: 25px;">NO</th>
+                <th style="width: 70px;">NIK</th>
+                <th style="width: 130px; text-align: left;">NAMA PEGAWAI</th>
+                <th style="width: 90px; text-align: left;">DEPARTEMEN</th>
+                
+                @for($d = 1; $d <= $daysInMonth; $d++)
+                    @php $dayHead = $daysHeader[$d]; @endphp
+                    <th style="width: 20px;" class="{{ $dayHead['is_off'] ? 'bg-holiday' : '' }}">
+                        {{ $d }}
+                    </th>
+                @endfor
+
+                <th style="width: 45px; background-color: #e2e8f0;">HADIR</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($rekapBulanan as $item)
+            @forelse($matrix as $index => $row)
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->pegawai_nama }}</td>
-                    <td>{{ $item->bulan_label }}</td>
-                    <td>{{ $item->shift_label }}</td>
-                    <td class="text-center">{{ $item->total_hadir }}</td>
-                    <td class="text-center">{{ $item->total_tepat_waktu }}</td>
-                    <td class="text-center">{{ $item->total_terlambat }}</td>
-                    <td class="text-center">{{ $item->total_pulang_cepat }}</td>
-                    <td class="text-center">{{ $item->total_sesuai_jadwal }}</td>
-                    <td class="text-center">{{ $item->total_belum_pulang }}</td>
+                    <td>{{ $index + 1 }}</td>
+                    <td style="color: #475569;">{{ $row->pegawai->nik }}</td>
+                    <td style="text-align: left; font-weight: bold;">{{ $row->pegawai->nama }}</td>
+                    <td style="text-align: left;">{{ optional($row->pegawai->departemen)->nama_departemen ?? '-' }}</td>
+
+                    @for($d = 1; $d <= $daysInMonth; $d++)
+                        @php 
+                            $cell = $row->days[$d]; 
+                            $dayHead = $daysHeader[$d];
+                        @endphp
+
+                        <td class="{{ $dayHead['is_off'] ? 'bg-off-cell' : '' }}">
+                            @if($cell['status'] === 'hadir')
+                                <span class="text-hadir">✓</span>
+                            @elseif($cell['status'] === 'alpa')
+                                <span class="text-alpa">✕</span>
+                            @else
+                                <span class="text-off">-</span>
+                            @endif
+                        </td>
+                    @endfor
+
+                    <td style="font-weight: bold; background-color: #f1f5f9;">
+                        {{ $row->total_hadir }}
+                    </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="{{ $daysInMonth + 5 }}" style="text-align: center; color: #94a3b8; padding: 20px;">
+                        Belum ada data rekapitulasi kehadiran.
+                    </td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 
-    <script>
-        window.onload = function() {
-            window.print();
-        }
-    </script>
+    <!-- TANDA TANGAN HRD -->
+    <div class="footer-section">
+        <table class="signature-table">
+            <tr>
+                <td style="width: 70%;">
+                    <div style="font-size: 7.5pt; color: #64748b;">
+                        <strong>Keterangan Simbol:</strong> &nbsp;
+                        <span class="text-hadir">✓</span> = Hadir / Absen &nbsp;&bull;&nbsp;
+                        <span class="text-alpa">✕</span> = Tidak Hadir / Alpa &nbsp;&bull;&nbsp;
+                        <span style="color: #991b1b;">Tanggal Red</span> = Libur / Akhir Pekan
+                    </div>
+                </td>
+                <td style="width: 30%;">
+                    <div class="signature-box">
+                        <div class="signature-date">
+                            Dicetak pada: {{ \Carbon\Carbon::now()->translatedFormat('d F Y H:i') }}
+                        </div>
+                        <div class="signature-title">Mengetahui,</div>
+                        <div class="signature-name">Admin HRD</div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
 </body>
 </html>

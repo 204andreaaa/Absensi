@@ -103,12 +103,21 @@ class AbsensiPegawaiController extends Controller
 
     public function riwayat()
     {
-        $riwayatAbsensi = Absensi::where('pegawai_id', Auth::id())
+        $pegawaiId = Auth::id();
+        $riwayatAbsensi = Absensi::where('pegawai_id', $pegawaiId)
             ->orderByDesc('tanggal')
             ->paginate(10);
 
+        $stats = [
+            'total_hadir' => Absensi::where('pegawai_id', $pegawaiId)->count(),
+            'tepat_waktu' => Absensi::where('pegawai_id', $pegawaiId)->where('status', 'tepat_waktu')->count(),
+            'terlambat' => Absensi::where('pegawai_id', $pegawaiId)->where('status', 'terlambat')->count(),
+            'pulang_cepat' => Absensi::where('pegawai_id', $pegawaiId)->whereNotNull('alasan_pulang_awal')->count(),
+        ];
+
         return view('pegawai.riwayat', [
-            'riwayatAbsensi' => $riwayatAbsensi
+            'riwayatAbsensi' => $riwayatAbsensi,
+            'stats' => $stats
         ]);
     }
 

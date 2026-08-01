@@ -379,19 +379,118 @@ class AbsensiController extends Controller
         ]);
     }
 
+    private function getMatrixData()
+    {
+        $bulan = (int) request('bulan', date('m'));
+        $tahun = (int) request('tahun', date('Y'));
+        $departemenId = request('departemen_id');
+
+        $startDate = Carbon::createFromDate($tahun, $bulan, 1)->startOfDay();
+        $daysInMonth = $startDate->daysInMonth;
+        $endDate = $startDate->copy()->endOfMonth()->endOfDay();
+        $today = Carbon::today();
+
+        // Query Pegawai
+        $queryPegawai = Pegawai::with('departemen')->orderBy('nama');
+        if ($departemenId) {
+            $queryPegawai->where('departemen_id', $departemenId);
+        }
+        $pegawaiList = $queryPegawai->get();
+
+        // Query Hari Libur
+        $hariLiburMap = HariLibur::whereBetween('tanggal', [$startDate->toDateString(), $endDate->toDateString()])
+            ->pluck('nama_libur', 'tanggal')
+            ->toArray();
+
+        // Query Absensi Records in month
+        $absensiMap = Absensi::whereBetween('tanggal', [$startDate->toDateString(), $endDate->toDateString()])
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->pegawai_id . '_' . (int) Carbon::parse($item->tanggal)->format('j');
+            });
+
+        $matrix = [];
+        $daysHeader = [];
+
+        // Build header info for each day of the month
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = Carbon::createFromDate($tahun, $bulan, $day);
+            $dateStr = $date->toDateString();
+            $isWeekend = $date->isWeekend();
+            $isHoliday = isset($hariLiburMap[$dateStr]);
+
+            $daysHeader[$day] = [
+                'day' => $day,
+                'date' => $dateStr,
+                'day_name' => $date->translatedFormat('D'),
+                'is_weekend' => $isWeekend,
+                'is_holiday' => $isHoliday,
+                'holiday_name' => $hariLiburMap[$dateStr] ?? null,
+                'is_off' => $isWeekend || $isHoliday
+            ];
+        }
+
+        // Build matrix data per employee
+        foreach ($pegawaiList as $p) {
+            $rowDays = [];
+            $totalHadir = 0;
+            $totalAlpa = 0;
+
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $dayInfo = $daysHeader[$day];
+                $key = $p->id . '_' . $day;
+                $hasAttendance = $absensiMap->has($key) && !empty($absensiMap[$key]->first()->jam_masuk);
+
+                if ($hasAttendance) {
+                    $status = 'hadir'; // Checkmark ✓
+                    $totalHadir++;
+                } else if ($dayInfo['is_off']) {
+                    $status = 'off'; // Holiday / Weekend (-)
+                } else if (Carbon::createFromDate($tahun, $bulan, $day)->lte($today)) {
+                    $status = 'alpa'; // Cross ✕
+                    $totalAlpa++;
+                } else {
+                    $status = 'future'; // Empty (-)
+                }
+
+                $rowDays[$day] = [
+                    'status' => $status,
+                    'record' => $hasAttendance ? $absensiMap[$key]->first() : null
+                ];
+            }
+
+            $matrix[] = (object) [
+                'pegawai' => $p,
+                'days' => $rowDays,
+                'total_hadir' => $totalHadir,
+                'total_alpa' => $totalAlpa
+            ];
+        }
+
+        return [
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+            'bulan_label' => $startDate->translatedFormat('F Y'),
+            'daysInMonth' => $daysInMonth,
+            'daysHeader' => $daysHeader,
+            'matrix' => $matrix,
+            'departemenId' => $departemenId,
+            'listDepartemen' => \App\Models\Departemen::orderBy('nama_departemen')->get()
+        ];
+    }
+
     public function laporanRekapBulanan()
     {
-        $rekapBulanan = $this->paginateCollection($this->monthlySummaryCollection());
+        $matrixData = $this->getMatrixData();
         $listPegawai = Pegawai::orderBy('nama')->get();
 
-        return view('admin.laporan.rekap_bulanan', [
+        return view('admin.laporan.rekap_bulanan', array_merge($matrixData, [
             'pageTitle' => 'Laporan Rekap Bulanan',
-            'cardTitle' => 'Rekap Absensi Bulanan',
+            'cardTitle' => 'Rekapitulasi Kehadiran Pegawai (Matrix Grid 1-31)',
             'exportRoute' => 'admin.laporan.rekap-bulanan.export-excel',
             'exportPdfRoute' => 'admin.laporan.rekap-bulanan.export-pdf',
-            'rekapBulanan' => $rekapBulanan,
             'listPegawai' => $listPegawai,
-        ]);
+        ]));
     }
 
     public function exportExcelRekapBulanan()
@@ -404,10 +503,11 @@ class AbsensiController extends Controller
 
     public function exportPdfRekapBulanan()
     {
-        return view('admin.laporan.export_pdf_rekap_bulanan', [
-            'reportTitle' => 'Laporan Rekap Bulanan',
-            'rekapBulanan' => $this->monthlySummaryCollection()
-        ]);
+        $matrixData = $this->getMatrixData();
+
+        return view('admin.laporan.export_pdf_rekap_bulanan', array_merge($matrixData, [
+            'reportTitle' => 'Laporan Kehadiran Bulanan - ' . $matrixData['bulan_label']
+        ]));
     }
 
     public function store(Request $request)

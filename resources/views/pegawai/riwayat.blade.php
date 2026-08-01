@@ -8,14 +8,62 @@
     <div class="card mb-4 border-0">
         <div class="card-body d-flex flex-wrap justify-content-between align-items-center" style="gap: 12px;">
             <div>
-                <div class="text-muted small text-uppercase font-weight-bold mb-2">Rekap Saya</div>
-                <h4 class="mb-1">Pantau semua absensi dalam satu layar</h4>
-                <p class="text-muted mb-0">Data masuk dan pulang ditampilkan otomatis berdasarkan riwayat tersimpan.</p>
+                <div class="text-muted small text-uppercase font-weight-bold mb-2">Rekap Absensi Saya</div>
+                <h4 class="mb-1">Pantau statistik kehadiran & riwayat absensi</h4>
+                <p class="text-muted mb-0">Lihat total kehadiran, jumlah terlambat, dan status absen harianmu di sini.</p>
             </div>
 
-            <a href="{{ route('pegawai.absensi') }}" class="btn btn-primary">
-                Absen Sekarang
+            <a href="{{ route('pegawai.absensi') }}" class="btn btn-primary font-weight-bold">
+                <i class="fas fa-camera mr-1"></i> Absen Sekarang
             </a>
+        </div>
+    </div>
+
+    <!-- KARTU STATISTIK RINGKASAN PRESENSI PEGAWAI -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-3 mb-lg-0">
+            <div class="card card-statistic-1 shadow-sm mb-0">
+                <div class="card-icon bg-primary">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header"><h4>Total Hadir</h4></div>
+                    <div class="card-body">{{ $stats['total_hadir'] ?? 0 }} Hari</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-3 mb-lg-0">
+            <div class="card card-statistic-1 shadow-sm mb-0">
+                <div class="card-icon bg-success">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header"><h4>Tepat Waktu</h4></div>
+                    <div class="card-body">{{ $stats['tepat_waktu'] ?? 0 }} Hari</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-3 mb-lg-0">
+            <div class="card card-statistic-1 shadow-sm mb-0">
+                <div class="card-icon bg-warning">
+                    <i class="fas fa-user-clock"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header"><h4>Terlambat</h4></div>
+                    <div class="card-body">{{ $stats['terlambat'] ?? 0 }} Hari</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-3 mb-lg-0">
+            <div class="card card-statistic-1 shadow-sm mb-0">
+                <div class="card-icon bg-danger">
+                    <i class="fas fa-running"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header"><h4>Pulang Cepat</h4></div>
+                    <div class="card-body">{{ $stats['pulang_cepat'] ?? 0 }} Hari</div>
+                </div>
+            </div>
         </div>
     </div>
 
