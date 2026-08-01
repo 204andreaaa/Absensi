@@ -538,52 +538,34 @@
                 tempCanvas.height = 100;
                 const ctx = tempCanvas.getContext('2d');
                 
-                // Crop area wajah + 30% padding sekeliling untuk mendeteksi bezel / bingkai HP
-                const padX = box.width * 0.30;
-                const padY = box.height * 0.30;
-                const cropX = Math.max(0, box.x - padX);
-                const cropY = Math.max(0, box.y - padY);
-                const cropW = Math.min(videoElement.videoWidth - cropX, box.width + (padX * 2));
-                const cropH = Math.min(videoElement.videoHeight - cropY, box.height + (padY * 2));
+                // Crop area wajah untuk mendeteksi pantulan silau kaca layar HP ekstrem
+                const cropX = Math.max(0, box.x);
+                const cropY = Math.max(0, box.y);
+                const cropW = Math.min(videoElement.videoWidth - cropX, box.width);
+                const cropH = Math.min(videoElement.videoHeight - cropY, box.height);
 
                 ctx.drawImage(videoElement, cropX, cropY, cropW, cropH, 0, 0, 100, 100);
 
                 const imgData = ctx.getImageData(0, 0, 100, 100).data;
-                let glareCount = 0;
-                let highFreqNoise = 0;
-                let darkBezelCount = 0;
+                let extremeGlareCount = 0;
                 const totalPixels = 100 * 100;
 
                 for (let i = 0; i < imgData.length; i += 4) {
                     const r = imgData[i];
                     const g = imgData[i + 1];
                     const b = imgData[i + 2];
-                    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
 
-                    // 1. Deteksi Glare / Pantulan Layar Kaca HP (Piksel Terang)
-                    if (r > 215 && g > 215 && b > 215) {
-                        glareCount++;
-                    }
-
-                    // 2. Deteksi Bingkai / Bezel HP Hitam di sekitar wajah
-                    if (lum < 30) {
-                        darkBezelCount++;
-                    }
-
-                    // 3. Deteksi Moiré Noise (Garis Piksel Layar Digital)
-                    if (i >= 4) {
-                        const prevLum = 0.299 * imgData[i - 4] + 0.587 * imgData[i - 3] + 0.114 * imgData[i - 2];
-                        highFreqNoise += Math.abs(lum - prevLum);
+                    // Deteksi Glare / Pantulan Ekstrem Layar Kaca HP (Piksel putih murni > 245)
+                    if (r > 245 && g > 245 && b > 245) {
+                        extremeGlareCount++;
                     }
                 }
 
-                const avgNoise = highFreqNoise / totalPixels;
-                const glareRatio = glareCount / totalPixels;
-                const bezelRatio = darkBezelCount / totalPixels;
+                const extremeGlareRatio = extremeGlareCount / totalPixels;
 
-                // Threshold sensitif untuk mendeteksi Layar HP / Bingkai Bezel Digital
-                if (glareRatio > 0.05 || avgNoise > 22 || bezelRatio > 0.10) {
-                    return { isSpoof: true, reason: 'Terdeteksi Layar HP / Bingkai Bezel Digital' };
+                // Threshold seimbang: Hanya blokir jika pantulan silau kaca layar HP > 40% area wajah
+                if (extremeGlareRatio > 0.40) {
+                    return { isSpoof: true, reason: 'Terdeteksi Pantulan Layar Kaca Digital' };
                 }
             } catch (e) {
                 console.error('Screen spoof check error:', e);
