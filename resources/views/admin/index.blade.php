@@ -8,52 +8,31 @@
   </div>
 </div>
 
-{{-- WELCOME HERO BANNER --}}
-<div class="row mb-3">
+{{-- WELCOME HERO BANNER WITH EMBEDDED MONTH & YEAR FILTER --}}
+<div class="row mb-4">
   <div class="col-12">
     <div class="card bg-gradient-primary text-white shadow-sm" style="background: linear-gradient(135deg, #6777ef 0%, #3547d7 100%); border-radius: 12px;">
-      <div class="card-body p-4 d-flex justify-content-between align-items-center">
-        <div>
+      <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap">
+        <div class="my-1">
           <h3 class="font-weight-bold text-white mb-2">Selamat Datang, Admin! 👋</h3>
           <p class="mb-0 text-white-50">Sistem Presensi Pegawai berbasis Liveness Detection & Face Recognition</p>
         </div>
-        <div class="text-right d-none d-md-block">
-          <span class="badge badge-light px-3 py-2 text-primary font-weight-bold" style="font-size: 0.9rem; border-radius: 20px;">
-            <i class="far fa-calendar-alt mr-1"></i> {{ \Carbon\Carbon::now()->isoFormat('D MMMM YYYY') }}
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-{{-- FILTER BULAN & TAHUN BERANDA --}}
-<div class="row mb-4">
-  <div class="col-12">
-    <div class="card shadow-sm border-0 mb-0" style="border-radius: 12px;">
-      <div class="card-body p-3 bg-white" style="border-radius: 12px;">
-        <form method="GET" action="{{ route('admin.dashboard') }}" class="form-inline justify-content-between align-items-center flex-wrap">
-          <div class="d-flex align-items-center my-1">
-            <i class="fas fa-calendar-alt text-primary fa-lg mr-2"></i>
-            <h5 class="mb-0 font-weight-bold text-dark">Filter Beranda:</h5>
-          </div>
-          <div class="d-flex align-items-center my-1">
-            <select name="bulan" class="form-control mr-2 font-weight-bold" onchange="this.form.submit()" style="border-radius: 8px;">
+        <div class="my-1">
+          <form method="GET" action="{{ route('admin.dashboard') }}" class="form-inline bg-white px-3 py-2 shadow-sm" style="border-radius: 30px;">
+            <i class="far fa-calendar-alt text-primary mr-2" style="font-size: 1.1rem;"></i>
+            <select name="bulan" class="form-control form-control-sm border-0 font-weight-bold text-primary mr-2" onchange="this.form.submit()" style="background-color: #eef2ff; border-radius: 20px; cursor: pointer; font-size: 0.9rem; outline: none; height: auto; padding: 6px 14px 6px 14px; line-height: 1.4;">
               @foreach(range(1, 12) as $m)
                 @php $mName = \Carbon\Carbon::createFromDate(null, $m, 1)->translatedFormat('F'); @endphp
                 <option value="{{ $m }}" {{ $m == $bulan ? 'selected' : '' }}>{{ $mName }}</option>
               @endforeach
             </select>
-            <select name="tahun" class="form-control mr-2 font-weight-bold" onchange="this.form.submit()" style="border-radius: 8px;">
+            <select name="tahun" class="form-control form-control-sm border-0 font-weight-bold text-primary" onchange="this.form.submit()" style="background-color: #eef2ff; border-radius: 20px; cursor: pointer; font-size: 0.9rem; outline: none; height: auto; padding: 6px 14px 6px 14px; line-height: 1.4;">
               @foreach([2025, 2026, 2027] as $y)
                 <option value="{{ $y }}" {{ $y == $tahun ? 'selected' : '' }}>{{ $y }}</option>
               @endforeach
             </select>
-            <button type="submit" class="btn btn-primary px-3 font-weight-bold" style="border-radius: 8px;">
-              <i class="fas fa-filter mr-1"></i> Filter
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>
