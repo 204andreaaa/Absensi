@@ -9,7 +9,7 @@
 </div>
 
 {{-- WELCOME HERO BANNER --}}
-<div class="row mb-4">
+<div class="row mb-3">
   <div class="col-12">
     <div class="card bg-gradient-primary text-white shadow-sm" style="background: linear-gradient(135deg, #6777ef 0%, #3547d7 100%); border-radius: 12px;">
       <div class="card-body p-4 d-flex justify-content-between align-items-center">
@@ -22,6 +22,38 @@
             <i class="far fa-calendar-alt mr-1"></i> {{ \Carbon\Carbon::now()->isoFormat('D MMMM YYYY') }}
           </span>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- FILTER BULAN & TAHUN BERANDA --}}
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card shadow-sm border-0 mb-0" style="border-radius: 12px;">
+      <div class="card-body p-3 bg-white" style="border-radius: 12px;">
+        <form method="GET" action="{{ route('admin.dashboard') }}" class="form-inline justify-content-between align-items-center flex-wrap">
+          <div class="d-flex align-items-center my-1">
+            <i class="fas fa-calendar-alt text-primary fa-lg mr-2"></i>
+            <h5 class="mb-0 font-weight-bold text-dark">Filter Beranda:</h5>
+          </div>
+          <div class="d-flex align-items-center my-1">
+            <select name="bulan" class="form-control mr-2 font-weight-bold" onchange="this.form.submit()" style="border-radius: 8px;">
+              @foreach(range(1, 12) as $m)
+                @php $mName = \Carbon\Carbon::createFromDate(null, $m, 1)->translatedFormat('F'); @endphp
+                <option value="{{ $m }}" {{ $m == $bulan ? 'selected' : '' }}>{{ $mName }}</option>
+              @endforeach
+            </select>
+            <select name="tahun" class="form-control mr-2 font-weight-bold" onchange="this.form.submit()" style="border-radius: 8px;">
+              @foreach([2025, 2026, 2027] as $y)
+                <option value="{{ $y }}" {{ $y == $tahun ? 'selected' : '' }}>{{ $y }}</option>
+              @endforeach
+            </select>
+            <button type="submit" class="btn btn-primary px-3 font-weight-bold" style="border-radius: 8px;">
+              <i class="fas fa-filter mr-1"></i> Filter
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -129,11 +161,11 @@
 {{-- GRAFIK & AKTIVITAS TERBARU --}}
 <div class="row">
 
-  {{-- GRAFIK TREN KEHADIRAN 7 HARI --}}
+  {{-- GRAFIK TREN KEHADIRAN --}}
   <div class="col-lg-7">
     <div class="card shadow-sm">
       <div class="card-header">
-        <h4><i class="fas fa-chart-line mr-2 text-primary"></i> Tren Kehadiran (7 Hari Terakhir)</h4>
+        <h4><i class="fas fa-chart-line mr-2 text-primary"></i> Tren Kehadiran ({{ \Carbon\Carbon::createFromDate(null, $bulan, 1)->translatedFormat('F') }} {{ $tahun }})</h4>
       </div>
       <div class="card-body">
         <canvas id="attendanceTrendChart" height="180"></canvas>
