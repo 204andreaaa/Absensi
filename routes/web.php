@@ -90,6 +90,7 @@ Route::prefix('admin')
     Route::get('absensi',[AbsensiController::class,'index'])->name('absensi.index');
     Route::get('absensi/inject',[AbsensiController::class,'injectForm'])->name('absensi.inject-form');
     Route::post('absensi/inject/process',[AbsensiController::class,'injectProcess'])->name('absensi.inject-process');
+    Route::post('absensi/inject/update-profile',[AbsensiController::class,'updateProfilePhoto'])->name('absensi.inject-update-profile');
     Route::post('absensi/reset-total',[AbsensiController::class,'resetTotal'])->name('absensi.reset-total');
     Route::post('absensi/store',[AbsensiController::class,'store'])->name('absensi.store');
     Route::post('absensi/reset-hari-ini',[AbsensiController::class,'resetHariIni'])->name('absensi.reset-hari-ini');

@@ -2,25 +2,67 @@
 
 @section('content')
 <div class="section-header">
-    <h1><i class="fas fa-magic text-primary mr-2"></i> Inject Presensi Foto Bulk</h1>
+    <h1><i class="fas fa-magic text-primary mr-2"></i> Inject Presensi & Profil Pegawai</h1>
     <div class="section-header-breadcrumb">
         <div class="breadcrumb-item active"><a href="{{ route('admin.dashboard') }}">Dashboard</a></div>
-        <div class="breadcrumb-item">Inject Presensi</div>
+        <div class="breadcrumb-item">Inject Presensi & Profil</div>
     </div>
 </div>
 
 <div class="row">
     <div class="col-lg-8 col-md-12 mx-auto">
-        <div class="card card-primary shadow-sm">
+
+        <!-- CARD 1: FORM UPDATE FOTO PROFIL PEGAWAI -->
+        <div class="card card-info shadow-sm mb-4">
             <div class="card-header bg-white py-3">
-                <h4 class="text-primary"><i class="fas fa-cloud-upload-alt mr-2"></i> Form Upload & Injek Foto Presensi Pegawai</h4>
+                <h4 class="text-info"><i class="fas fa-id-badge mr-2"></i> Form Update Foto Profil Pegawai</h4>
+            </div>
+            <div class="card-body">
+                <form id="formUpdateFotoProfil" enctype="multipart/form-data">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group mb-0">
+                                <label class="font-weight-bold">Pilih Pegawai <span class="text-danger">*</span></label>
+                                <select name="pegawai_id" id="profil_pegawai_id" class="form-control select2" required style="width: 100%;">
+                                    <option value="">-- Pilih Pegawai --</option>
+                                    @foreach($pegawais as $p)
+                                        <option value="{{ $p->id }}">{{ $p->nama }} (NIK: {{ $p->nik }}) - {{ $p->departemen->nama_departemen ?? '-' }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="form-group mb-0">
+                                <label class="font-weight-bold">Pilih Foto Profil Baru <span class="text-danger">*</span></label>
+                                <div class="custom-file">
+                                    <input type="file" name="foto_profil" id="foto_profil_only" class="custom-file-input" accept="image/jpeg,image/png,image/jpg" required>
+                                    <label class="custom-file-label" for="foto_profil_only">Pilih Foto Profil...</label>
+                                </div>
+                                <small class="form-text text-muted" id="previewProfilOnlyText">Pilih 1 gambar untuk foto profil pegawai di sistem.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnSubmitProfilOnly" class="btn btn-info btn-block shadow-sm font-weight-bold mt-2">
+                        <i class="fas fa-save mr-2"></i> Update Foto Profil Pegawai
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- CARD 2: FORM INJEK PRESENSI BULK -->
+        <div class="card card-primary shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h4 class="text-primary"><i class="fas fa-cloud-upload-alt mr-2"></i> Form Injek Foto Presensi Pegawai (Bulk)</h4>
             </div>
 
             <div class="card-body">
                 <div class="alert alert-info alert-has-icon mb-4">
                     <div class="alert-icon"><i class="fas fa-info-circle"></i></div>
                     <div class="alert-body">
-                        <div class="alert-title">Petunjuk Penggunaan Fitur Injek:</div>
+                        <div class="alert-title">Petunjuk Penggunaan Fitur Injek Presensi:</div>
                         Upload beberapa pasang foto presensi. Sistem akan secara otomatis mengompresi foto dan menginjek presensi pegawai sesuai dengan jumlah pasang foto yang kamu unggah ke tanggal-tanggal kerja di bulan yang kamu pilih!
                     </div>
                 </div>
@@ -39,18 +81,6 @@
                                         <option value="{{ $p->id }}">{{ $p->nama }} (NIK: {{ $p->nik }}) - {{ $p->departemen->nama_departemen ?? '-' }}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                        </div>
-
-                        <!-- Upload Foto Profil Pegawai -->
-                        <div class="col-md-12 mb-3">
-                            <div class="form-group mb-0">
-                                <label class="font-weight-bold"><i class="fas fa-id-badge text-primary mr-1"></i> Upload Foto Profil Pegawai (Opsional / Update Profil)</label>
-                                <div class="custom-file">
-                                    <input type="file" name="foto_profil" id="foto_profil" class="custom-file-input" accept="image/jpeg,image/png,image/jpg">
-                                    <label class="custom-file-label" for="foto_profil">Pilih Foto Profil Pegawai...</label>
-                                </div>
-                                <small class="form-text text-muted" id="previewProfilText">Jika diisi, foto profil resmi pegawai ini di database akan otomatis diperbarui.</small>
                             </div>
                         </div>
 
@@ -117,6 +147,7 @@
                                 <small class="form-text text-muted" id="previewPulangCount">Jika kosong, foto masuk akan dipakai otomatis.</small>
                             </div>
                         </div>
+
                         <!-- Random Status Checkbox -->
                         <div class="col-md-12 mb-3">
                             <div class="custom-control custom-checkbox bg-light p-3 rounded border">
@@ -149,20 +180,26 @@
                         </span>
                     </div>
 
-                    <button type="submit" id="btnSubmitInject" class="btn btn-primary btn-block btn-lg shadow-sm">
+                    <button type="submit" id="btnSubmitInject" class="btn btn-primary btn-block btn-lg shadow-sm font-weight-bold">
                         <i class="fas fa-paper-plane mr-2"></i> Proses Injek Presensi Foto Sekarang
                     </button>
-
-                    <!-- Reset Total Button -->
-                    <div class="border-top pt-4 mt-4 text-center">
-                        <button type="button" id="btnResetTotalAbsensi" class="btn btn-outline-danger btn-block">
-                            <i class="fas fa-trash-alt mr-2"></i> Reset Total Seluruh Data Absensi & Hapus Semua Foto (Kosongkan Total)
-                        </button>
-                        <small class="form-text text-muted mt-2">Tombol ini akan menghapus seluruh data presensi di database dan membersihkan seluruh file foto di storage server.</small>
-                    </div>
                 </form>
             </div>
         </div>
+
+        <!-- CARD 3: DANGER ZONE - RESET TOTAL ABSENSI -->
+        <div class="card card-danger shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h4 class="text-danger"><i class="fas fa-exclamation-triangle mr-2"></i> Danger Zone - Reset Total Data Presensi</h4>
+            </div>
+            <div class="card-body text-center">
+                <p class="text-muted mb-3">Tombol ini akan menghapus total seluruh data presensi di database dan membersihkan seluruh file foto di storage server.</p>
+                <button type="button" id="btnResetTotalAbsensi" class="btn btn-outline-danger btn-block font-weight-bold">
+                    <i class="fas fa-trash-alt mr-2"></i> Reset Total Seluruh Data Absensi & Hapus Semua Foto (Kosongkan Total)
+                </button>
+            </div>
+        </div>
+
     </div>
 </div>
 @endsection
@@ -216,10 +253,25 @@ $(document).ready(function(){
         });
     }
 
+    // Custom File Label Updates
+    $('#foto_profil_only').on('change', function(){
+        let fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').html(fileName || 'Pilih Foto Profil...');
+    });
+
+    $('#foto_masuk').on('change', function(){
+        let count = this.files.length;
+        $(this).next('.custom-file-label').html(count > 0 ? count + ' foto terpilih' : 'Pilih Foto Masuk...');
+    });
+
+    $('#foto_pulang').on('change', function(){
+        let count = this.files.length;
+        $(this).next('.custom-file-label').html(count > 0 ? count + ' foto terpilih' : 'Pilih Foto Pulang...');
+    });
+
     function updateSummary() {
         let masukCount = $('#foto_masuk')[0].files.length;
         let pulangCount = $('#foto_pulang')[0].files.length;
-        let pegawaiText = $('#pegawai_id option:selected').text();
         let bulanText = $('#bulan option:selected').text();
         let tahunText = $('#tahun').val();
         let modeText = $('input[name="mode_tanggal"]:checked').val() === 'random' ? 'ACAK (Random)' : 'URUT';
@@ -245,6 +297,58 @@ $(document).ready(function(){
         updateSummary();
     });
 
+    // SUBMIT HANDLER: FORM UPDATE FOTO PROFIL PEGAWAI
+    $('#formUpdateFotoProfil').on('submit', async function(e){
+        e.preventDefault();
+
+        let btn = $('#btnSubmitProfilOnly');
+        let originalText = btn.html();
+
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Mengompresi & Memperbarui Profil...');
+
+        let formData = new FormData();
+        formData.append('_token', $('input[name="_token"]').val());
+        formData.append('pegawai_id', $('#profil_pegawai_id').val());
+
+        let profilFiles = $('#foto_profil_only')[0].files;
+        if (profilFiles.length > 0) {
+            let compressedProfil = await compressImageFile(profilFiles[0]);
+            formData.append('foto_profil', compressedProfil);
+        }
+
+        $.ajax({
+            url: "{{ route('admin.absensi.inject-update-profile') }}",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response){
+                btn.prop('disabled', false).html(originalText);
+                if (response.success) {
+                    alert('SUKSES! 🎉\n\n' + response.message);
+                    $('#formUpdateFotoProfil')[0].reset();
+                    $('#foto_profil_only').next('.custom-file-label').html('Pilih Foto Profil...');
+                } else {
+                    alert('Gagal: ' + response.message);
+                }
+            },
+            error: function(xhr){
+                btn.prop('disabled', false).html(originalText);
+                if (xhr.status === 422 && xhr.responseJSON) {
+                    let errors = xhr.responseJSON.errors || {};
+                    let msg = xhr.responseJSON.message || '';
+                    if (errors) {
+                        $.each(errors, function(k, v){ msg += '\n• ' + v[0]; });
+                    }
+                    alert('Gagal Update Profil:\n' + msg);
+                } else {
+                    alert('Terjadi kesalahan server (' + xhr.status + '). Silakan coba lagi.');
+                }
+            }
+        });
+    });
+
+    // SUBMIT HANDLER: FORM INJEK PRESENSI BULK
     $('#formInjectPresensi').on('submit', async function(e){
         e.preventDefault();
 
@@ -260,11 +364,12 @@ $(document).ready(function(){
         formData.append('tahun', $('#tahun').val());
         formData.append('mode_tanggal', $('input[name="mode_tanggal"]:checked').val());
 
-        let profilFiles = $('#foto_profil')[0].files;
-        if (profilFiles.length > 0) {
-            btn.html('<i class="fas fa-spinner fa-spin mr-2"></i> Mengompresi Foto Profil...');
-            let compressedProfil = await compressImageFile(profilFiles[0]);
-            formData.append('foto_profil', compressedProfil);
+        if ($('#random_status').is(':checked')) {
+            formData.append('random_status', '1');
+        }
+
+        if ($('#reset_bulan_ini').is(':checked')) {
+            formData.append('reset_bulan_ini', '1');
         }
 
         let masukFiles = $('#foto_masuk')[0].files;
@@ -297,6 +402,8 @@ $(document).ready(function(){
                 if (response.success) {
                     alert('SUKSES! 🎉\n\n' + response.message);
                     $('#formInjectPresensi')[0].reset();
+                    $('#foto_masuk').next('.custom-file-label').html('Pilih Foto Masuk...');
+                    $('#foto_pulang').next('.custom-file-label').html('Pilih Foto Pulang...');
                     updateSummary();
                 } else {
                     alert('Gagal: ' + response.message);
@@ -320,6 +427,7 @@ $(document).ready(function(){
         });
     });
 
+    // HANDLER: RESET TOTAL ABSENSI
     $('#btnResetTotalAbsensi').on('click', function(){
         if (confirm("⚠️ PERINGATAN BERSAMA!\n\nApakah Anda YAKIN ingin MENGHAPUS TOTAL SELURUH DATA PRESENSI dan SELURUH FILE FOTO di storage server?\n\nData yang dihapus tidak bisa dikembalikan.")) {
             let btn = $(this);

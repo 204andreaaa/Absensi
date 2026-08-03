@@ -676,6 +676,35 @@ class AbsensiController extends Controller
         return view('admin.absensi.inject', compact('pegawais'));
     }
 
+    public function updateProfilePhoto(Request $request)
+    {
+        $request->validate([
+            'pegawai_id' => 'required|exists:pegawais,id',
+            'foto_profil' => 'required|image|mimes:jpeg,jpg,png|max:5120',
+        ], [
+            'pegawai_id.required' => 'Pilih pegawai terlebih dahulu.',
+            'foto_profil.required' => 'Pilih foto profil terlebih dahulu.',
+            'foto_profil.image' => 'File harus berupa gambar (jpg, jpeg, png).',
+        ]);
+
+        $pegawai = Pegawai::findOrFail($request->pegawai_id);
+        $fileProfil = $request->file('foto_profil');
+        $extProfil = $fileProfil->getClientOriginalExtension();
+        $pathProfilRel = "pegawai/profile_{$pegawai->id}_" . time() . ".{$extProfil}";
+
+        if ($pegawai->foto && Storage::disk('public')->exists($pegawai->foto)) {
+            Storage::disk('public')->delete($pegawai->foto);
+        }
+
+        Storage::disk('public')->putFileAs('', $fileProfil, $pathProfilRel);
+        $pegawai->update(['foto' => $pathProfilRel]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Foto profil resmi untuk pegawai {$pegawai->nama} berhasil diperbarui!"
+        ]);
+    }
+
     public function injectProcess(Request $request)
     {
         $request->validate([
