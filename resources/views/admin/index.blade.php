@@ -47,10 +47,10 @@
       </div>
       <div class="card-wrap">
         <div class="card-header">
-          <h4>Terlambat Hari Ini</h4>
+          <h4>Terlambat ({{ \Carbon\Carbon::createFromDate(null, $bulan, 1)->translatedFormat('F') }})</h4>
         </div>
         <div class="card-body">
-          {{ $terlambatHariIni }} <span class="text-muted font-weight-normal style-sm">Orang</span>
+          {{ $terlambatBulanIni }} <span class="text-muted font-weight-normal style-sm">Presensi</span>
         </div>
       </div>
     </div>
@@ -63,10 +63,10 @@
       </div>
       <div class="card-wrap">
         <div class="card-header">
-          <h4>Hadir Hari Ini</h4>
+          <h4>Total Hadir ({{ \Carbon\Carbon::createFromDate(null, $bulan, 1)->translatedFormat('F') }})</h4>
         </div>
         <div class="card-body">
-          {{ $hadirHariIni }} <span class="text-muted font-weight-normal style-sm">Orang</span>
+          {{ $totalAbsensiBulanIni }} <span class="text-muted font-weight-normal style-sm">Presensi</span>
         </div>
       </div>
     </div>
@@ -79,10 +79,10 @@
       </div>
       <div class="card-wrap">
         <div class="card-header">
-          <h4>Tepat Waktu</h4>
+          <h4>Tepat Waktu ({{ \Carbon\Carbon::createFromDate(null, $bulan, 1)->translatedFormat('F') }})</h4>
         </div>
         <div class="card-body">
-          {{ $tepatWaktuHariIni }} <span class="text-muted font-weight-normal style-sm">Orang</span>
+          {{ $tepatWaktuBulanIni }} <span class="text-muted font-weight-normal style-sm">Presensi</span>
         </div>
       </div>
     </div>
@@ -111,7 +111,7 @@
       </div>
       <div class="card-wrap">
         <div class="card-header">
-          <h4>Belum Absen Masuk</h4>
+          <h4>Belum Absen (Hari Ini)</h4>
         </div>
         <div class="card-body">
           {{ $belumAbsenHariIni }} <span class="text-muted font-weight-normal style-sm">Orang</span>
