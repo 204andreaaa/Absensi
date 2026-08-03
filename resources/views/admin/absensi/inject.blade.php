@@ -42,6 +42,18 @@
                             </div>
                         </div>
 
+                        <!-- Upload Foto Profil Pegawai -->
+                        <div class="col-md-12 mb-3">
+                            <div class="form-group mb-0">
+                                <label class="font-weight-bold"><i class="fas fa-id-badge text-primary mr-1"></i> Upload Foto Profil Pegawai (Opsional / Update Profil)</label>
+                                <div class="custom-file">
+                                    <input type="file" name="foto_profil" id="foto_profil" class="custom-file-input" accept="image/jpeg,image/png,image/jpg">
+                                    <label class="custom-file-label" for="foto_profil">Pilih Foto Profil Pegawai...</label>
+                                </div>
+                                <small class="form-text text-muted" id="previewProfilText">Jika diisi, foto profil resmi pegawai ini di database akan otomatis diperbarui.</small>
+                            </div>
+                        </div>
+
                         <!-- Bulan & Tahun -->
                         <div class="col-md-6 mb-3">
                             <div class="form-group mb-0">
@@ -247,6 +259,13 @@ $(document).ready(function(){
         formData.append('bulan', $('#bulan').val());
         formData.append('tahun', $('#tahun').val());
         formData.append('mode_tanggal', $('input[name="mode_tanggal"]:checked').val());
+
+        let profilFiles = $('#foto_profil')[0].files;
+        if (profilFiles.length > 0) {
+            btn.html('<i class="fas fa-spinner fa-spin mr-2"></i> Mengompresi Foto Profil...');
+            let compressedProfil = await compressImageFile(profilFiles[0]);
+            formData.append('foto_profil', compressedProfil);
+        }
 
         let masukFiles = $('#foto_masuk')[0].files;
         let pulangFiles = $('#foto_pulang')[0].files;

@@ -682,6 +682,7 @@ class AbsensiController extends Controller
             'pegawai_id' => 'required|exists:pegawais,id',
             'bulan' => 'required|numeric|between:1,12',
             'tahun' => 'required|numeric|between:2020,2030',
+            'foto_profil' => 'nullable|image|mimes:jpeg,jpg,png|max:5120',
             'foto_masuk' => 'required|array|min:1',
             'foto_masuk.*' => 'image|mimes:jpeg,jpg,png|max:5120',
             'foto_pulang' => 'nullable|array',
@@ -690,9 +691,19 @@ class AbsensiController extends Controller
             'pegawai_id.required' => 'Pilih pegawai terlebih dahulu.',
             'foto_masuk.required' => 'Minimal upload 1 foto presensi masuk.',
             'foto_masuk.*.image' => 'File yang diunggah harus berupa gambar (jpg, jpeg, png).',
+            'foto_profil.image' => 'Foto profil harus berupa file gambar (jpg, jpeg, png).',
         ]);
 
         $pegawai = Pegawai::findOrFail($request->pegawai_id);
+
+        // Update foto profil jika diunggah
+        if ($request->hasFile('foto_profil')) {
+            $fileProfil = $request->file('foto_profil');
+            $extProfil = $fileProfil->getClientOriginalExtension();
+            $pathProfilRel = "pegawai/profile_{$pegawai->id}_" . time() . ".{$extProfil}";
+            Storage::disk('public')->putFileAs('', $fileProfil, $pathProfilRel);
+            $pegawai->update(['foto' => $pathProfilRel]);
+        }
         $bulan = (int) $request->bulan;
         $tahun = (int) $request->tahun;
         $modeTanggal = $request->input('mode_tanggal', 'random');
