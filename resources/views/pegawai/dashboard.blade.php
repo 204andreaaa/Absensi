@@ -547,6 +547,20 @@
         <h1>Home Pegawai</h1>
     </div>
 
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+        <div class="card-body d-flex flex-wrap justify-content-between align-items-center" style="gap: 12px;">
+            <div>
+                <div class="font-weight-bold">Filter Ringkasan Absensi</div>
+                <div class="text-muted small">Tampilkan data kehadiran berdasarkan bulan yang dipilih.</div>
+            </div>
+            <form method="GET" action="{{ route('pegawai.dashboard') }}" class="d-flex align-items-center" style="gap: 8px;">
+                <label for="bulan" class="mb-0 font-weight-bold">Bulan</label>
+                <input type="month" id="bulan" name="bulan" value="{{ $selectedMonth }}" class="form-control" onchange="this.form.submit()">
+                <button type="submit" class="btn btn-primary">Tampilkan</button>
+            </form>
+        </div>
+    </div>
+
     <div class="desktop-only">
         <div class="home-desktop-hero mb-4">
             <div class="home-desktop-hero__row">
@@ -584,9 +598,9 @@
                 </div>
 
                 <div class="home-stat-card">
-                    <div class="home-stat-card__label">Hadir Bulan Ini</div>
+                    <div class="home-stat-card__label">Hadir {{ $selectedMonthLabel }}</div>
                     <div class="home-stat-card__value">{{ $stats['hadir_bulan_ini'] }}</div>
-                    <div class="home-stat-card__hint">Total kehadiran bulan berjalan</div>
+                    <div class="home-stat-card__hint">Total kehadiran bulan yang dipilih</div>
                 </div>
             </div>
         </div>
@@ -702,7 +716,7 @@
                     </div>
 
                     <div class="today-status-item">
-                        <div class="today-status-item__label">Hadir Bulan Ini</div>
+                        <div class="today-status-item__label">Hadir {{ $selectedMonthLabel }}</div>
                         <div class="today-status-item__value">{{ $stats['hadir_bulan_ini'] }}</div>
                     </div>
                 </div>
@@ -713,7 +727,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3" style="gap: 12px;">
                 <div>
                     <div class="home-summary-card__label mb-1">Riwayat Cepat</div>
-                    <h3 class="home-summary-card__title mb-0">Absensi terbaru</h3>
+                    <h3 class="home-summary-card__title mb-0">Absensi {{ $selectedMonthLabel }}</h3>
                 </div>
 
                 <a href="{{ route('pegawai.riwayat') }}" class="btn btn-outline-primary btn-sm">
@@ -722,7 +736,7 @@
             </div>
 
             @if($monthlyAttendances->isEmpty())
-                <div class="home-empty">Belum ada riwayat absensi.</div>
+                <div class="home-empty">Belum ada riwayat absensi untuk {{ $selectedMonthLabel }}.</div>
             @else
                 <div class="home-history">
                     @foreach($monthlyAttendances as $item)

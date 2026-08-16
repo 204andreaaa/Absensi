@@ -53,27 +53,34 @@ class AbsensiPegawaiController extends Controller
     }
 
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $pegawaiId = Auth::id();
         $today = Carbon::today();
         $holidayMessage = $this->getHolidayMessage($today);
         $todayString = $today->toDateString();
-        $startOfMonth = $today->copy()->startOfMonth()->toDateString();
+        $request->validate([
+            'bulan' => ['nullable', 'date_format:Y-m'],
+        ]);
+
+        $selectedMonth = $request->input('bulan', $today->format('Y-m'));
+        $selectedMonthDate = Carbon::createFromFormat('!Y-m', $selectedMonth);
+        $startOfMonth = $selectedMonthDate->copy()->startOfMonth()->toDateString();
+        $endOfMonth = $selectedMonthDate->copy()->endOfMonth()->toDateString();
 
         $todayAttendance = Absensi::where('pegawai_id', $pegawaiId)
             ->whereDate('tanggal', $todayString)
             ->first();
 
         $monthlyAttendances = Absensi::where('pegawai_id', $pegawaiId)
-            ->whereBetween('tanggal', [$startOfMonth, $todayString])
+            ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
             ->orderByDesc('tanggal')
             ->limit(5)
             ->get();
 
         $stats = [
             'hadir_bulan_ini' => Absensi::where('pegawai_id', $pegawaiId)
-                ->whereBetween('tanggal', [$startOfMonth, $todayString])
+                ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
                 ->count(),
             'sudah_masuk_hari_ini' => (bool) optional($todayAttendance)->jam_masuk,
             'sudah_pulang_hari_ini' => (bool) optional($todayAttendance)->jam_pulang,
@@ -84,7 +91,9 @@ class AbsensiPegawaiController extends Controller
             'todayAttendance' => $todayAttendance,
             'monthlyAttendances' => $monthlyAttendances,
             'stats' => $stats,
-            'holidayMessage' => $holidayMessage
+            'holidayMessage' => $holidayMessage,
+            'selectedMonth' => $selectedMonth,
+            'selectedMonthLabel' => $selectedMonthDate->translatedFormat('F Y'),
         ]);
     }
 
