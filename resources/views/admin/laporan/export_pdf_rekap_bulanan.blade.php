@@ -133,7 +133,7 @@
         /* SIGNATURE FOOTER */
         .footer-section {
             width: 100%;
-            margin-top: 15px;
+            margin-top: 30px;
             page-break-inside: avoid;
         }
 
@@ -149,32 +149,37 @@
         }
 
         .signature-box {
-            width: 200px;
+            width: 220px;
             text-align: center;
             float: right;
         }
 
         .signature-date {
-            font-size: 8.5pt;
-            color: #475569;
-            margin-bottom: 4px;
+            font-size: 9pt;
+            color: #64748b;
+            margin-bottom: 8px;
         }
 
         .signature-title {
-            font-size: 8.5pt;
+            font-size: 9.5pt;
             font-weight: 600;
             color: #0f172a;
-            margin-bottom: 40px;
+            margin-bottom: 60px;
         }
 
         .signature-name {
-            font-size: 8.5pt;
+            font-size: 9.5pt;
             font-weight: 800;
             color: #0f172a;
-            border-top: 1px solid #0f172a;
-            padding-top: 3px;
+            border-top: 1.5px solid #0f172a;
+            padding-top: 4px;
             display: inline-block;
-            min-width: 140px;
+            min-width: 160px;
+        }
+
+        .signature-position {
+            font-size: 9pt;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -255,7 +260,7 @@
         </tbody>
     </table>
 
-    <!-- TANDA TANGAN HRD -->
+    <!-- TANDA TANGAN HEAD IT -->
     <div class="footer-section">
         <table class="signature-table">
             <tr>
@@ -269,16 +274,29 @@
                 </td>
                 <td style="width: 30%;">
                     <div class="signature-box">
-                        <div class="signature-date">
-                            Dicetak pada: {{ \Carbon\Carbon::now()->translatedFormat('d F Y H:i') }}
-                        </div>
+                        <div class="signature-date">Dicetak pada: <span class="print-timestamp"></span></div>
                         <div class="signature-title">Mengetahui,</div>
-                        <div class="signature-name">Admin HRD</div>
+                        <div class="signature-name">Sadrakh Simorangkir</div>
+                        <div class="signature-position">Head IT</div>
                     </div>
                 </td>
             </tr>
         </table>
     </div>
 
+    <script>
+        function updatePrintTimestamp() {
+            const formattedTime = new Intl.DateTimeFormat('id-ID', {
+                day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            }).format(new Date()).replace('.', ':');
+
+            document.querySelectorAll('.print-timestamp').forEach(function (element) {
+                element.textContent = formattedTime;
+            });
+        }
+
+        window.addEventListener('beforeprint', updatePrintTimestamp);
+        updatePrintTimestamp();
+    </script>
 </body>
 </html>

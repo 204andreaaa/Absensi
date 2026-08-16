@@ -190,6 +190,11 @@
             display: inline-block;
             min-width: 160px;
         }
+
+        .signature-position {
+            font-size: 9pt;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -263,23 +268,36 @@
         </tbody>
     </table>
 
-    <!-- TANDA TANGAN HRD -->
+    <!-- TANDA TANGAN HEAD IT -->
     <div class="footer-section">
         <table class="signature-table">
             <tr>
                 <td style="width: 60%;"></td>
                 <td style="width: 40%;">
                     <div class="signature-box">
-                        <div class="signature-date">
-                            Dicetak pada: {{ \Carbon\Carbon::now()->translatedFormat('d F Y H:i') }}
-                        </div>
+                        <div class="signature-date">Dicetak pada: <span class="print-timestamp"></span></div>
                         <div class="signature-title">Mengetahui,</div>
-                        <div class="signature-name">Admin HRD</div>
+                        <div class="signature-name">Sadrakh Simorangkir</div>
+                        <div class="signature-position">Head IT</div>
                     </div>
                 </td>
             </tr>
         </table>
     </div>
 
+    <script>
+        function updatePrintTimestamp() {
+            const formattedTime = new Intl.DateTimeFormat('id-ID', {
+                day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            }).format(new Date()).replace('.', ':');
+
+            document.querySelectorAll('.print-timestamp').forEach(function (element) {
+                element.textContent = formattedTime;
+            });
+        }
+
+        window.addEventListener('beforeprint', updatePrintTimestamp);
+        updatePrintTimestamp();
+    </script>
 </body>
 </html>
