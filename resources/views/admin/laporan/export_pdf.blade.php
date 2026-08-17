@@ -15,7 +15,7 @@
         .footer-section { width: 100%; margin-top: 30px; page-break-inside: avoid; }
         .signature-table { width: 100%; border-collapse: collapse; border: none; margin-top: 0; }
         .signature-table td { border: none !important; vertical-align: top; padding: 0; }
-        .signature-box { width: 220px; text-align: center; float: right; }
+        .signature-box { width: 220px; text-align: center; display: inline-block; }
         .signature-date { font-size: 9pt; color: #64748b; margin-bottom: 8px; }
         .signature-title { font-size: 9.5pt; font-weight: 600; margin-bottom: 60px; }
         .signature-name { font-size: 9.5pt; font-weight: 800; border-top: 1.5px solid #0f172a; padding-top: 4px; display: inline-block; min-width: 160px; }
@@ -27,11 +27,6 @@
     </style>
 </head>
 <body>
-    <div class="no-print" style="margin-bottom: 20px;">
-        <button onclick="window.print()" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">Print / Save as PDF</button>
-        <button onclick="window.close()" style="padding: 10px 20px; background-color: #f44336; color: white; border: none; cursor: pointer; margin-left: 10px;">Tutup</button>
-    </div>
-
     @include('admin.laporan.partials.kop_surat')
 
     <h3>{{ $reportTitle ?? 'Laporan Absensi' }}</h3>
@@ -88,37 +83,14 @@
     </table>
 
     <div class="footer-section">
-        <table class="signature-table">
-            <tr>
-                <td style="width: 60%;"></td>
-                <td style="width: 40%;">
-                    <div class="signature-box">
-                        <div class="signature-date">Dicetak pada: <span class="print-timestamp"></span></div>
-                        <div class="signature-title">Mengetahui,</div>
-                        <div class="signature-name">Sadrakh Simorangkir</div>
-                        <div class="signature-position">Head IT</div>
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <div style="text-align: right;">
+            <div class="signature-box">
+                <div class="signature-date">Jakarta, {{ now()->locale('id')->translatedFormat('l, d F Y') }}</div>
+                <div class="signature-title">Mengetahui,</div>
+                <div class="signature-name">Sadrakh Simorangkir</div>
+                <div class="signature-position">Head IT</div>
+            </div>
+        </div>
     </div>
-
-    <script>
-        function updatePrintTimestamp() {
-            const formattedTime = new Intl.DateTimeFormat('id-ID', {
-                day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-            }).format(new Date()).replace('.', ':');
-
-            document.querySelectorAll('.print-timestamp').forEach(function (element) {
-                element.textContent = formattedTime;
-            });
-        }
-
-        window.addEventListener('beforeprint', updatePrintTimestamp);
-        window.onload = function() {
-            updatePrintTimestamp();
-            window.print();
-        }
-    </script>
 </body>
 </html>

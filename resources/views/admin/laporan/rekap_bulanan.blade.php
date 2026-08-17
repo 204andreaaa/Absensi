@@ -9,8 +9,8 @@
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
             <h4 class="mb-2 mb-md-0">{{ $cardTitle }} ({{ $bulan_label }})</h4>
             <div class="card-header-action">
-                <a href="{{ route($exportPdfRoute, request()->query()) }}" target="_blank" class="btn btn-danger font-weight-bold">
-                    <i class="fas fa-file-pdf mr-1"></i> Cetak / Print PDF
+                <a href="{{ route($exportPdfRoute, request()->query()) }}" class="btn btn-danger font-weight-bold">
+                    <i class="fas fa-file-pdf mr-1"></i> Cetak PDF
                 </a>
             </div>
         </div>

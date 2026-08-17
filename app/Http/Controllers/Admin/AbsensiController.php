@@ -14,6 +14,7 @@ use App\Models\HariLibur;
 use App\Models\Pegawai;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AbsensiController extends Controller
 {
@@ -246,10 +247,12 @@ class AbsensiController extends Controller
     {
         $laporanAbsensi = $this->attendanceCollection();
 
-        return view('admin.laporan.export_pdf', [
+        $pdf = Pdf::loadView('admin.laporan.export_pdf', [
             'reportTitle' => 'Laporan Kehadiran',
             'laporanAbsensi' => $laporanAbsensi
-        ]);
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download('laporan-kehadiran-' . now()->format('Ymd-His') . '.pdf');
     }
 
     public function laporanTepatWaktu()
@@ -293,10 +296,12 @@ class AbsensiController extends Controller
         }
         $pegawai = $query->get();
 
-        return view('admin.laporan.export_pegawai_pdf', [
+        $pdf = Pdf::loadView('admin.laporan.export_pegawai_pdf', [
             'reportTitle' => 'Laporan Pegawai',
             'pegawai' => $pegawai
-        ]);
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->download('laporan-pegawai-' . now()->format('Ymd-His') . '.pdf');
     }
 
     public function laporanTerlambat()
@@ -333,10 +338,12 @@ class AbsensiController extends Controller
             fn (Absensi $item) => $item->status === 'terlambat'
         );
 
-        return view('admin.laporan.export_pdf', [
+        $pdf = Pdf::loadView('admin.laporan.export_pdf', [
             'reportTitle' => 'Laporan Keterlambatan',
             'laporanAbsensi' => $laporanAbsensi
-        ]);
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download('laporan-keterlambatan-' . now()->format('Ymd-His') . '.pdf');
     }
 
     public function laporanPulangCepat()
@@ -373,10 +380,12 @@ class AbsensiController extends Controller
             fn (Absensi $item) => $item->status_pulang_label === 'Pulang Cepat'
         );
 
-        return view('admin.laporan.export_pdf', [
+        $pdf = Pdf::loadView('admin.laporan.export_pdf', [
             'reportTitle' => 'Laporan Pulang Cepat',
             'laporanAbsensi' => $laporanAbsensi
-        ]);
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download('laporan-pulang-cepat-' . now()->format('Ymd-His') . '.pdf');
     }
 
     private function getMatrixData()
@@ -505,9 +514,11 @@ class AbsensiController extends Controller
     {
         $matrixData = $this->getMatrixData();
 
-        return view('admin.laporan.export_pdf_rekap_bulanan', array_merge($matrixData, [
+        $pdf = Pdf::loadView('admin.laporan.export_pdf_rekap_bulanan', array_merge($matrixData, [
             'reportTitle' => 'Laporan Kehadiran Bulanan - ' . $matrixData['bulan_label']
-        ]));
+        ]))->setPaper('a4', 'landscape');
+
+        return $pdf->download('laporan-rekap-bulanan-' . now()->format('Ymd-His') . '.pdf');
     }
 
     public function store(Request $request)

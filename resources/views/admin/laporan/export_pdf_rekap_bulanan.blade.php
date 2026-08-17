@@ -23,49 +23,6 @@
             background: #ffffff;
         }
 
-        /* NO PRINT ACTION BAR */
-        .no-print-bar {
-            background: #1e293b;
-            padding: 10px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-radius: 6px;
-        }
-
-        .no-print-bar span {
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        .btn-action {
-            padding: 6px 14px;
-            border-radius: 4px;
-            border: none;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .btn-print {
-            background: #4f46e5;
-            color: #ffffff;
-        }
-
-        .btn-close {
-            background: #64748b;
-            color: #ffffff;
-            margin-left: 6px;
-        }
-
-        @media print {
-            .no-print-bar {
-                display: none !important;
-            }
-        }
-
         /* REPORT TITLE */
         .report-title-box {
             text-align: center;
@@ -151,7 +108,7 @@
         .signature-box {
             width: 220px;
             text-align: center;
-            float: right;
+            display: inline-block;
         }
 
         .signature-date {
@@ -184,15 +141,6 @@
     </style>
 </head>
 <body>
-
-    <!-- ACTION BAR UNTUK BROWSER -->
-    <div class="no-print-bar">
-        <span>Preview Print Laporan Kehadiran Bulanan (Grid Matrix)</span>
-        <div>
-            <button onclick="window.print()" class="btn-action btn-print">🖨️ Cetak / Simpan PDF</button>
-            <button onclick="window.close()" class="btn-action btn-close">✖ Tutup</button>
-        </div>
-    </div>
 
     <!-- KOP SURAT STANDAR -->
     @include('admin.laporan.partials.kop_surat')
@@ -272,9 +220,9 @@
                         <span style="color: #991b1b;">Tanggal Red</span> = Libur / Akhir Pekan
                     </div>
                 </td>
-                <td style="width: 30%;">
+                <td style="width: 30%; text-align: right;">
                     <div class="signature-box">
-                        <div class="signature-date">Dicetak pada: <span class="print-timestamp"></span></div>
+                        <div class="signature-date">Jakarta, {{ now()->locale('id')->translatedFormat('l, d F Y') }}</div>
                         <div class="signature-title">Mengetahui,</div>
                         <div class="signature-name">Sadrakh Simorangkir</div>
                         <div class="signature-position">Head IT</div>
@@ -284,19 +232,5 @@
         </table>
     </div>
 
-    <script>
-        function updatePrintTimestamp() {
-            const formattedTime = new Intl.DateTimeFormat('id-ID', {
-                day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-            }).format(new Date()).replace('.', ':');
-
-            document.querySelectorAll('.print-timestamp').forEach(function (element) {
-                element.textContent = formattedTime;
-            });
-        }
-
-        window.addEventListener('beforeprint', updatePrintTimestamp);
-        updatePrintTimestamp();
-    </script>
 </body>
 </html>

@@ -23,53 +23,6 @@
             background: #ffffff;
         }
 
-        /* NO PRINT ACTION BAR */
-        .no-print-bar {
-            background: #1e293b;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-
-        .no-print-bar span {
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .btn-action {
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: none;
-            font-weight: bold;
-            font-size: 13px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .btn-print {
-            background: #4f46e5;
-            color: #ffffff;
-        }
-
-        .btn-close {
-            background: #64748b;
-            color: #ffffff;
-            margin-left: 8px;
-        }
-
-        @media print {
-            .no-print-bar {
-                display: none !important;
-            }
-            body {
-                background: #ffffff !important;
-            }
-        }
-
         /* REPORT TITLE */
         .report-title-box {
             text-align: center;
@@ -165,7 +118,7 @@
         .signature-box {
             width: 220px;
             text-align: center;
-            float: right;
+            display: inline-block;
         }
 
         .signature-date {
@@ -198,15 +151,6 @@
     </style>
 </head>
 <body>
-
-    <!-- ACTION BAR UNTUK BROWSER -->
-    <div class="no-print-bar">
-        <span>Preview Print Laporan Pegawai</span>
-        <div>
-            <button onclick="window.print()" class="btn-action btn-print">🖨️ Cetak / Simpan PDF</button>
-            <button onclick="window.close()" class="btn-action btn-close">✖ Tutup</button>
-        </div>
-    </div>
 
     <!-- KOP SURAT STANDAR LAPORAN -->
     @include('admin.laporan.partials.kop_surat')
@@ -270,34 +214,14 @@
 
     <!-- TANDA TANGAN HEAD IT -->
     <div class="footer-section">
-        <table class="signature-table">
-            <tr>
-                <td style="width: 60%;"></td>
-                <td style="width: 40%;">
-                    <div class="signature-box">
-                        <div class="signature-date">Dicetak pada: <span class="print-timestamp"></span></div>
-                        <div class="signature-title">Mengetahui,</div>
-                        <div class="signature-name">Sadrakh Simorangkir</div>
-                        <div class="signature-position">Head IT</div>
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <div style="text-align: right;">
+            <div class="signature-box">
+                <div class="signature-date">Jakarta, {{ now()->locale('id')->translatedFormat('l, d F Y') }}</div>
+                <div class="signature-title">Mengetahui,</div>
+                <div class="signature-name">Sadrakh Simorangkir</div>
+                <div class="signature-position">Head IT</div>
+            </div>
+        </div>
     </div>
-
-    <script>
-        function updatePrintTimestamp() {
-            const formattedTime = new Intl.DateTimeFormat('id-ID', {
-                day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-            }).format(new Date()).replace('.', ':');
-
-            document.querySelectorAll('.print-timestamp').forEach(function (element) {
-                element.textContent = formattedTime;
-            });
-        }
-
-        window.addEventListener('beforeprint', updatePrintTimestamp);
-        updatePrintTimestamp();
-    </script>
 </body>
 </html>

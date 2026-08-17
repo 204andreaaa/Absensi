@@ -12,8 +12,8 @@
                 <a href="{{ route($exportRoute, request()->query()) }}" class="btn btn-success">
                     <i class="fas fa-file-excel mr-1"></i> Export Excel
                 </a>
-                <a href="{{ route($exportPdfRoute, request()->query()) }}" target="_blank" class="btn btn-danger ml-2">
-                    <i class="fas fa-file-pdf mr-1"></i> Print PDF
+                <a href="{{ route($exportPdfRoute, request()->query()) }}" class="btn btn-danger ml-2">
+                    <i class="fas fa-file-pdf mr-1"></i> Cetak PDF
                 </a>
             </div>
         </div>
