@@ -12,7 +12,7 @@
         <td style="width: 140px; border: none; vertical-align: middle; text-align: center; padding: 0;">
             <img src="{{ $logoSrc }}" alt="Logo" style="max-width: 130px; max-height: 75px; object-fit: contain;">
         </td>
-        <td style="border: none; vertical-align: middle; padding-left: 15px;">
+        <td style="border: none; vertical-align: middle; padding: 0 15px; text-align: center;">
             <h2 style="margin: 0; font-size: 15pt; font-weight: 800; text-transform: uppercase; color: #000; letter-spacing: 0.5px;">PT. MANDIRI DAYA UTAMA NUSANTARA</h2>
             <p style="margin: 4px 0 2px 0; font-size: 9pt; color: #333; line-height: 1.3;">
                 Golden Fatmawati, Jl. RS. Fatmawati Raya No.17 C17, RT.10/RW.6, Gandaria Sel.,
